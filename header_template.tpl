@@ -9,7 +9,6 @@
 <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
-        padding-left: 170px;
       }
 </style>
 
@@ -26,10 +25,11 @@
           <a class="brand" href="/books">Know Thy Shelf</a>
           <div class="nav-collapse">
             <ul class="nav">
-              <li class="active"><a href="/">Home</a></li>
+              <li><a href="/books">Home</a></li>
               <li><a href="/scan">Scan</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
     </div>
+ <div class="container">

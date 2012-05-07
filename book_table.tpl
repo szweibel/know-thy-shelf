@@ -15,6 +15,5 @@
 </table>
 <p><a href="/new">Add new book</a></p>
 <p><a href="/scan">Scan bookshelves</a></p>
-</body>
 
 %include footer_template
