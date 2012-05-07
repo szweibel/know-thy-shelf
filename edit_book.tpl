@@ -1,8 +1,9 @@
-%#template for editing a book
-%#the template expects to receive a value for "no" as well a "old", the call_number of the selected book item
-<p>{{oldtag}}Edit the book with ID = {{no}}</p>
 
-<form action="/edit/{{no}}" method="get">
+%include header_template title="Know Thy Shelf"
+
+<p>Edit the book with ID = {{no}}</p>
+
+<form action="/edit/{{no}}/" method="get">
 <input type="hidden" name="{{no}}" value="{{no}}">
 <input type="text" name="call_number" value="{{old[0]}}" size="100" maxlength="100">
 <input type="text" name="tag" value="{{oldtag[0]}}" size="100" maxlength="100">

@@ -1,9 +1,8 @@
 %include header_template title="Know Thy Shelf"
 
-<body>
 %#template to generate a HTML table from a list of tuples (or list of lists, or tuple of tuples or ...)
 <p>Know Thy Shelf:</p>
-<table border="1">
+<table border="0">
 %for row in rows:
     %list1 = list(row)
   <tr>

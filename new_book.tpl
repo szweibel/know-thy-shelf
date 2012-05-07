@@ -1,3 +1,6 @@
+
+%include header_template title="Know Thy Shelf"
+
 <p>Add a new book to the list:</p>
 %get(flash)
 %if flash:

@@ -3,9 +3,13 @@ from bottle import route, run, debug, template, request, validate, static_file, 
 from bookscan import *
 
 
-@route('/static/style.css')
+# @app.route('/static/<filename>', name='static')
+# def server_static(filename):
+#     return static_file(filename, root='static')
+
+@route('/static/bootstrap.css')
 def css():
-    return static_file('style.css', root='/home/stephen/Scripts/bottle/static')
+    return static_file('bootstrap.css', root='/home/stephen/Scripts/bottle/static')
 
 
 @route('/books')
