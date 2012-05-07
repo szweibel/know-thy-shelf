@@ -1,6 +1,6 @@
 import sqlite3
-from bottle import route, run, debug, template, request, validate, static_file, response
-from bookscan import *
+from bottle import route, run, debug, template, request, validate, static_file  # response
+from booksorting import *
 
 
 # @app.route('/static/<filename>', name='static')

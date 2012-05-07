@@ -1,0 +1,247 @@
+diff --git a/README~ b/README~
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/book_detail.tpl b/book_detail.tpl
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/book_table.tpl b/book_table.tpl
+index d0c892d..e7d3d62 100644
+--- a/book_table.tpl
++++ b/book_table.tpl
+@@ -2,7 +2,7 @@
+ 
+ %#template to generate a HTML table from a list of tuples (or list of lists, or tuple of tuples or ...)
+ <p>Know Thy Shelf:</p>
+-<table border="0">
++<table border="1">
+ %for row in rows:
+     %list1 = list(row)
+   <tr>
+diff --git a/booksorting.py b/booksorting.py
+index 3631192..42a8ec2 100644
+--- a/booksorting.py
++++ b/booksorting.py
+@@ -133,8 +133,8 @@ class BookCheck(object):
+ scanned_books = ['AA240 B142 1999',  'AA240.B14323 1956', 'AA240 B142 2000', 'AB240.B14.C22 1976',
+ 'AB101.B14.K12 1976', 'AB10.B14.K12 1976', 'JR364 .H876 .G52 1946', 'CK364 .H876 .G52 1946', 'R4364 .K6 .I52 1995']
+ 
+-correct_books = (['AA240 B142 1999', 'AA240 B142 2000', 'AA240.B14323 1956', 'AB240.B14.C22 1976',
+-'AB10.B14.K12 1976', 'AB101.B14.K12 1976', 'CK364 .H876 .G52 1946', 'J4375 .H876 .G52 1946', 'JR437 .K6 .I52 1995'])
++correct_books = (['AA240 B142 1999', 'AA240 B142 2000', 'AA240.B14323 1956', 'AB10.B14.K12 1976',
++'AB101.B14.K12 1976', 'AB240.B14.C22 1976', 'CK364 .H876 .G52 1946', 'J4375 .H876 .G52 1946', 'JR437 .K6 .I52 1995'])
+ 
+ x = BookCheck()
+ 
+diff --git a/build/bottle-flash/PKG-INFO b/build/bottle-flash/PKG-INFO
+deleted file mode 100644
+index 11f8d40..0000000
+--- a/build/bottle-flash/PKG-INFO
++++ /dev/null
+@@ -1,51 +0,0 @@
+-Metadata-Version: 1.1
+-Name: bottle-flash
+-Version: 0.1
+-Summary: flash plugin for bottle
+-Home-page: https://github.com/agreatjewel/bottle_plugins/tree/master/bottle_flash
+-Author: Ajeet Grewal
+-Author-email: asgrewal@gmail.com
+-License: MIT
+-Description: bottle_flash
+-        ============
+-        
+-        This plugin enables flash messages in bottle. Again, learn by example
+-        
+-        ::
+-        
+-        from bottle import Bottle
+-        from bottle_flash import FlashPlugin
+-        
+-        app = Bottle()
+-        COOKIE_SECRET = 'super_secret_string'
+-        app.install(FlashPlugin(secret=COOKIE_SECRET))
+-        
+-        app.post('/create_user')
+-        def create_user():
+-        # Create the user
+-        app.flash('Created !')
+-        
+-        To consume the flashed messages, you would do something like the following (jinja2). Here I am assuming that I get the "app" in the template context. This can be achieved with the bottle_renderer_ plugin.
+-        
+-        ::
+-        
+-        {% set messages = app.get_flashed_messages() %}
+-        {% if messages %}
+-        <div id="flash_messages">
+-        <ul>
+-        {% for m in messages %}
+-        <li>{{ m[0] }}</li>
+-        {% endfor %}
+-        </ul>
+-        </div>
+-        {% endif %}
+-        
+-Platform: any
+-Classifier: Environment :: Web Environment
+-Classifier: Intended Audience :: Developers
+-Classifier: License :: OSI Approved :: MIT License
+-Classifier: Operating System :: OS Independent
+-Classifier: Programming Language :: Python
+-Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+-Classifier: Topic :: Software Development :: Libraries :: Python Modules
+-Requires: bottle (>=0.9)
+diff --git a/build/bottle-flash/bottle_flash.py b/build/bottle-flash/bottle_flash.py
+deleted file mode 100644
+index 19f38a2..0000000
+--- a/build/bottle-flash/bottle_flash.py
++++ /dev/null
+@@ -1,42 +0,0 @@
+-from functools import wraps
+-from bottle import request, response
+-
+-class FlashPlugin(object):
+-    name = 'flash'
+-
+-    def __init__(self, key='flash', secret=None):
+-        self.key = key
+-        self.secret = secret
+-        self.app = None
+-
+-    def setup(self, app):
+-        self.app = app
+-        self.app.hooks.add('before_request', self.load_flashed)
+-        self.app.hooks.add('after_request', self.set_flashed)
+-        self.app.flash = self.flash
+-        self.app.get_flashed_messages = self.get_flashed_messages
+-
+-    def load_flashed(self):
+-        m = request.get_cookie(self.key, self.secret)
+-        if m is not None:
+-            response.flash_messages = m
+-
+-    def set_flashed(self):
+-        if hasattr(response, 'flash_messages'):
+-            response.set_cookie(self.key, response.flash_messages, self.secret)
+-            delattr(response, 'flash_messages')
+-
+-    def flash(self, message, level=None):
+-        if not hasattr(response, 'flash_messages'):
+-            response.flash_messages = []
+-        response.flash_messages.append((message, level))
+-
+-    def get_flashed_messages(self):
+-        if hasattr(response, 'flash_messages'):
+-            m = response.flash_messages
+-            delattr(response, 'flash_messages')
+-            response.delete_cookie(self.key)
+-            return m
+-            
+-    def apply(self, callback, context):
+-        return callback
+diff --git a/build/bottle-flash/setup.py b/build/bottle-flash/setup.py
+deleted file mode 100644
+index 894016f..0000000
+--- a/build/bottle-flash/setup.py
++++ /dev/null
+@@ -1,39 +0,0 @@
+-#!/usr/bin/env python
+-
+-import sys
+-import os
+-from distutils.core import setup
+-
+-try:
+-    from distutils.command.build_py import build_py_2to3 as build_py
+-except ImportError:
+-    from distutils.command.build_py import build_py
+-
+-setup(
+-    name = 'bottle-flash',
+-    version = '0.1',
+-    url = 'https://github.com/agreatjewel/bottle_plugins/tree/master/bottle_flash',
+-    description = 'flash plugin for bottle',
+-    long_description = open('README.rst').read(),
+-    author = 'Ajeet Grewal',
+-    author_email = 'asgrewal@gmail.com',
+-    license = 'MIT',
+-    platforms = 'any',
+-    py_modules = [
+-        'bottle_flash'
+-    ],
+-    requires = [
+-        'bottle (>=0.9)'
+-    ],
+-    classifiers = [
+-        'Environment :: Web Environment',
+-        'Intended Audience :: Developers',
+-        'License :: OSI Approved :: MIT License',
+-        'Operating System :: OS Independent',
+-        'Programming Language :: Python',
+-        'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
+-        'Topic :: Software Development :: Libraries :: Python Modules'
+-    ],
+-    cmdclass = {'build_py': build_py}
+-)
+-
+diff --git a/build/pip-delete-this-directory.txt b/build/pip-delete-this-directory.txt
+deleted file mode 100644
+index c8883ea..0000000
+--- a/build/pip-delete-this-directory.txt
++++ /dev/null
+@@ -1,5 +0,0 @@
+-This file is placed here by pip to indicate the source was put
+-here by pip.
+-
+-Once this package is successfully installed this source code will be
+-deleted (unless you remove this file).
+diff --git a/edit_book.tpl b/edit_book.tpl
+index 3688790..c4c1fd6 100644
+--- a/edit_book.tpl
++++ b/edit_book.tpl
+@@ -3,7 +3,7 @@
+ 
+ <p>Edit the book with ID = {{no}}</p>
+ 
+-<form action="/edit/{{no}}/" method="get">
++<form action="/edit/{{no}}" method="get">
+ <input type="hidden" name="{{no}}" value="{{no}}">
+ <input type="text" name="call_number" value="{{old[0]}}" size="100" maxlength="100">
+ <input type="text" name="tag" value="{{oldtag[0]}}" size="100" maxlength="100">
+diff --git a/header_template.tpl b/header_template.tpl
+index 1561a85..254e385 100644
+--- a/header_template.tpl
++++ b/header_template.tpl
+@@ -3,7 +3,7 @@
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <meta name="description" content="Determine Library book order and inventory">
+ <meta name="author" content="SZ">
+-<LINK REL=StyleSheet HREF="static/bootstrap.css" TYPE="text/css" MEDIA=screen>
++<LINK REL=StyleSheet HREF="http://localhost:8080/static/bootstrap.css" TYPE="text/css" MEDIA=screen>
+ <title>{{title or 'No title'}}</title>
+ 
+ <style>
+diff --git a/mybottle.py b/mybottle.py
+index ce72be5..4b28cbd 100644
+--- a/mybottle.py
++++ b/mybottle.py
+@@ -1,6 +1,6 @@
+ import sqlite3
+-from bottle import route, run, debug, template, request, validate, static_file, response
+-from bookscan import *
++from bottle import route, run, debug, template, request, validate, static_file  # response
++from booksorting import *
+ 
+ 
+ # @app.route('/static/<filename>', name='static')
+diff --git a/new_task.tpl b/new_task.tpl
+deleted file mode 100644
+index d6414b5..0000000
+--- a/new_task.tpl
++++ /dev/null
+@@ -1,7 +0,0 @@
+-<p>Add a new book to the list:</p>
+-<form action="/new" method="GET">
+-<p>Call Number:<input type="text" size="100" maxlength="100" name="call_number"></br>
+-RFID tag:<input type="text" size="100" maxlength="100" name="tag"></p>
+-<input type="submit" name="save" value="save">
+-</form>
+-<p><a href="/books">Back</a></p>

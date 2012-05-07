@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Determine Library book order and inventory">
 <meta name="author" content="SZ">
-<LINK REL=StyleSheet HREF="static/bootstrap.css" TYPE="text/css" MEDIA=screen>
+<LINK REL=StyleSheet HREF="http://localhost:8080/static/bootstrap.css" TYPE="text/css" MEDIA=screen>
 <title>{{title or 'No title'}}</title>
 
 <style>
