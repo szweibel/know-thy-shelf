@@ -1,0 +1,51 @@
+Metadata-Version: 1.1
+Name: bottle-flash
+Version: 0.1
+Summary: flash plugin for bottle
+Home-page: https://github.com/agreatjewel/bottle_plugins/tree/master/bottle_flash
+Author: Ajeet Grewal
+Author-email: asgrewal@gmail.com
+License: MIT
+Description: bottle_flash
+        ============
+        
+        This plugin enables flash messages in bottle. Again, learn by example
+        
+        ::
+        
+        from bottle import Bottle
+        from bottle_flash import FlashPlugin
+        
+        app = Bottle()
+        COOKIE_SECRET = 'super_secret_string'
+        app.install(FlashPlugin(secret=COOKIE_SECRET))
+        
+        app.post('/create_user')
+        def create_user():
+        # Create the user
+        app.flash('Created !')
+        
+        To consume the flashed messages, you would do something like the following (jinja2). Here I am assuming that I get the "app" in the template context. This can be achieved with the bottle_renderer_ plugin.
+        
+        ::
+        
+        {% set messages = app.get_flashed_messages() %}
+        {% if messages %}
+        <div id="flash_messages">
+        <ul>
+        {% for m in messages %}
+        <li>{{ m[0] }}</li>
+        {% endfor %}
+        </ul>
+        </div>
+        {% endif %}
+        
+Platform: any
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires: bottle (>=0.9)
