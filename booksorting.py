@@ -11,6 +11,7 @@ class BookCheck(object):
             self.test_ideal_tags = outside_book_list  # bind list with provided list
 
         self.order_list = []
+        self.gapped_list = []
 
     def call_number_split(self, call_number_list):
         for index, call_number in enumerate(call_number_list):
@@ -50,36 +51,36 @@ class BookCheck(object):
         last_last_book = 0
         order_list = []
         moved_list = []
-        gapped_list = []
         rehabilitated_list = []
 
         for index, book in enumerate(booklist):
             print 'correct: ', correct_list
             print 'wrong: ', misplaced_list
-            print 'Moved back: ', moved_list
+            print 'Moved back from correct: ', moved_list
             print 'Looking at: ', book, '>', last_book, '?'
             print 'rehabilitated: ', rehabilitated_list
+            print "Gapped list: ", self.gapped_list
             print '__________'
             if self.order(book, last_book):
                 correct_list.append(book)
                 #if the last book is below this one, make the last book correct
-                if gapped_list:
-                    print 'is ', book, '>', gapped_list[-1]
-                    if self.order(book, gapped_list[-1]):
-                        hh = gapped_list[-1]
+                if self.gapped_list:
+                    print 'is ', book, '>', self.gapped_list[-1]
+                    if self.order(book, self.gapped_list[-1]):
+                        hh = self.gapped_list[-1]
                         print "yay!",  hh, "saved!"
                         rehabilitated_list.append(hh)
                         rehabilitated_list.append(last_last_book)
-                        gapped_list.remove(hh)
-                # if self.order(book, last_last_book, last_book):
-                #     rehabilitated_list.append(last_last_book)
-                #     print "WYAYAYAYAYA"
+                        self.gapped_list.remove(hh)
+                    # if self.order(book, last_last_book, last_book):
+                    #     rehabilitated_list.append(last_last_book)
+                    #     print "WYAYAYAYAYA"
                 last_last_book = last_book
                 last_book = book
             elif self.shelf_gap(book, correct_list, order_list):
                 if self.order(last_book, book):
-                    gapped_list.append(book)
-                    print 'Found a gap for', gapped_list
+                    self.gapped_list.append(book)
+                    print 'Found a gap for', self.gapped_list
                     incorrectly_filed = correct_list.pop()
                     misplaced_list.append(incorrectly_filed)
                     moved_list.append(incorrectly_filed)
@@ -89,7 +90,6 @@ class BookCheck(object):
                 #print last_book, book
             else:
                 print "Error!"
-        print "Gapped list: ", gapped_list
         print "misplaced list: ", misplaced_list
         print "correct: ", correct_list
 
@@ -98,16 +98,6 @@ class BookCheck(object):
             booklist[index] = self.final_order(book, misplaced_list, correct_list, rehabilitated_list)
 
         return order_list
-
-    def final_order(self, book, wrong_list, correct_list, rehabilitated_list):
-        if book in correct_list:
-            return book, 'O'
-        elif book in rehabilitated_list:
-            return book, '?'
-        elif book in wrong_list:
-            return book, 'M'
-        else:
-            return 'X'
 
     #Determine whether a book is in the right place
     def order(self, x, y, z=None):
@@ -122,6 +112,20 @@ class BookCheck(object):
             else:
                 return False
 
+    # Place labels on the final list of books, to show their order status
+    def final_order(self, book, wrong_list, correct_list, rehabilitated_list):
+        if book in correct_list:
+            return book, 'O'
+        elif book in rehabilitated_list:
+            return book, '?'
+        elif book in self.gapped_list:
+            return book, '!'
+        elif book in wrong_list:
+            return book, 'M'
+        else:
+            return 'X'
+
+    # Determine if a book would fit earlier in the bookshelf
     def shelf_gap(self, misplaced_book, earlier_books, ordered_books):
         for index, earlier_book in enumerate(earlier_books):
             if misplaced_book <= earlier_book:
@@ -129,6 +133,19 @@ class BookCheck(object):
             else:
                 continue
 
+    # Take the corresponding part of the library to the scan, to compare them.
+    # To be used with filter(library_slice(), whole_library)
+    def library_slice(self, first_scanned, last_scanned, library_book):
+        if library_book >= first_scanned and library_book <= last_scanned:
+            return True
+        else:
+            return False
+
+    # Take the corresponding part of the library to the scan, to compare them.
+    # Send the index, not the value, of the book. Probably should make the net wider.
+    def lib_slice(self, first_scanned, last_scanned, library_list):
+        list_to_compare = library_list[first_scanned:last_scanned]
+        return list_to_compare
 
 scanned_books = ['AA240 B142 1999',  'AA240.B14323 1956', 'AA240 B142 2000', 'AB240.B14.C22 1976',
 'AB101.B14.K12 1976', 'AB10.B14.K12 1976', 'JR364 .H876 .G52 1946', 'CK364 .H876 .G52 1946', 'R4364 .K6 .I52 1995']
@@ -144,8 +161,8 @@ fake_library = [range(100)]
 
 fake_list = [2, 3, 4, 5, 70, 60, 6, 10, 9, 13, 11, 12, 14, 15, 16, 50, 510, 17]
 #fake_bookshelf = fake_library[(
-fake_list2 = [1, 2, 3, 90, 91, 93, 4, 5, 6, 7, 8]
+fake_list2 = [1, 2, 3, 4, 10, 5, 6, 7, 8, 9, 11, 12, 13, 14]
 #print 'Unordered: ', fake_list
-print x.compare_order(fake_list)
+print x.compare_order(fake_list2)
 r = x.sort_table(v, (0, 1, 2, 3))
 #print r

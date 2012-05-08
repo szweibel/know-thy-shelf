@@ -3,13 +3,9 @@ from bottle import route, run, debug, template, request, validate, static_file  
 from booksorting import *
 
 
-# @app.route('/static/<filename>', name='static')
-# def server_static(filename):
-#     return static_file(filename, root='static')
-
-@route('/static/bootstrap.css')
-def css():
-    return static_file('bootstrap.css', root='/home/stephen/Scripts/bottle/static')
+@route('/static/:path#.+#', name='static')
+def static(path):
+    return static_file(path, root='static')
 
 
 @route('/books')
@@ -32,11 +28,11 @@ def new_item():
         c = conn.cursor()
 
         c.execute("INSERT INTO tada (call_number,tag,status) VALUES (?,?,?)", (new, newtag, 1))
-        new_id = c.lastrowid
+        #new_id = c.lastrowid
 
         conn.commit()
         c.close()
-        flash = 'The new book was inserted into the database. The ID is %s' % new_id
+        flash = 'The new book was inserted into the database. <a href="/new">Add another</a>'
         return template('new_book.tpl', flash=flash)
     else:
         return template('new_book.tpl', flash=None)
@@ -69,7 +65,7 @@ def edit_item(no):
         c.execute("UPDATE tada SET call_number = ?, tag = ?, status = ? WHERE id LIKE ?", (edit, tag, status, no))
         conn.commit()
 
-        return '<p>The item number %s was successfully updated</p>' % no
+        return '<p>The item number %s was successfully updated. <a href="/books">Home</a></p>' % no
 
     else:
 
@@ -96,22 +92,33 @@ def display_forum():
 
 @route('/scan', method='GET')
 def scan_books():
-
+    test_list = []
     if request.GET.get('save', '').strip():
-        tag1 = request.GET.get('tag1', '').strip()
-        tag2 = request.GET.get('tag2', '').strip()
-        tag3 = request.GET.get('tag3', '').strip()
-        tag4 = request.GET.get('tag4', '').strip()
-        tag5 = request.GET.get('tag5', '').strip()
-        tag6 = request.GET.get('tag6', '').strip()
-        list_of_tags = [tag1, tag2, tag3, tag4, tag5, tag6]
+        list_of_tags = request.GET.get('tags', '').strip()
+        
+        sanitized_list = list_of_tags.split('\r\n')
 
+        # conn = sqlite3.connect('tada.db')
+        # c = conn.cursor()
+        # c.execute("SELECT tag, call_number FROM tada")
+        # result = dict(c.fetchall())
+        # c.close()
+        # for ident, book in enumerate(sanitized_list):
+        #     for tag, value in result.items():
+        #         if book in sanitized_list:
+        #             sanitized_list[ident] = value
+        # for tag, value in result.items():
+        #     for ident, book in enumerate(sanitized_list):
+        #         if not book in result:
+        #             pass
+        #             sanitized_list[ident] = value
+        #             test_list.append(value)
         x = BookCheck()
-        send = x.compare_order(list_of_tags)
-        return 'List of tags: %s' % send
-
+        v = x.split_arrange(sanitized_list)
+        send = x.compare_order(v)
+        #return str(sanitized_list)
+        return template('after_scan', books=send)
     else:
-
         return template('scan_books')
 
 

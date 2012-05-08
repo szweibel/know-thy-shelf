@@ -6,7 +6,7 @@
 %for row in rows:
     %list1 = list(row)
   <tr>
-  %for col in row:
+    %for col in row:
     <td><a href="/edit/{{list1[0]}}">{{col}}</td></a>
     %#<td>{{col}}</td>
   %end

@@ -72,6 +72,13 @@ class BookCheck(object):
 
         return order_list
 
+    #Determine whether a book is in the right place
+    def order(self, x, y):
+        if x >= y:
+            return True
+        else:
+            return False
+
     def final_order(self, book, wrong_list, correct_list):
         if book in wrong_list:
             return 'M'
@@ -80,19 +87,18 @@ class BookCheck(object):
         else:
             return 'X'
 
-    #Determine whether a book is in the right place
-    def order(self, x, y):
-        if x >= y:
-            return True
-        else:
-            return False
-
     def shelf_gap(self, misplaced_book, earlier_books, ordered_books):
         for index, earlier_book in enumerate(earlier_books):
             if misplaced_book <= earlier_book:
                 return True
             else:
                 continue
+
+    def library_slice(self, first_scanned, last_scanned, library_book):
+        if library_book >= first_scanned and library_book <= last_scanned:
+            return True
+        else:
+            return False
 
 
 # scanned_books = ['AA240 B142 1999',  'AA240.B14323 1956', 'AA240 B142 2000', 'AB240.B14.C22 1976',

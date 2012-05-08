@@ -27,6 +27,7 @@
             <ul class="nav">
               <li><a href="/books">Home</a></li>
               <li><a href="/scan">Scan</a></li>
+              <li><a href="/new">Add New</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>
