@@ -12,7 +12,7 @@ def static(path):
 def book_list():
     conn = sqlite3.connect('tada.db')
     c = conn.cursor()
-    c.execute("SELECT id, call_number FROM tada")
+    c.execute("SELECT id, tag, call_number FROM tada")
     result = c.fetchall()
     c.close()
     output = template('book_table', rows=result)
@@ -92,8 +92,9 @@ def display_forum():
 
 @route('/scan', method='GET')
 def scan_books():
-    test_list = []
+
     next_list = []
+    ordered_library_calls = []
     if request.GET.get('save', '').strip():
         list_of_tags = request.GET.get('tags', '').strip()
 
@@ -112,11 +113,17 @@ def scan_books():
         library_calls = d.fetchall()
         d.close()
 
-        for index, book in result.items():
-            if index in sanitized_list:
-                test_list.append(str(book))
+        #The trouble! This gives the RIGHT LIST, WRONG ORDER. Maybe list.replace?
+        # for index, book in result.items():
+        #     if index in sanitized_list:
+        #         test_list.append(str(book))
         x = BookCheck()
-        sorted_scanned_books = x.split_arrange(test_list)
+        #out = map(x.find_call_from_tag(tag, result, sanitized_list), sanitized_list)
+        out = [x.find_call_from_tag(tag, result) for tag in sanitized_list]
+        new_list = []
+        for book in out:
+            new_list.append(str(book))
+        sorted_scanned_books = x.split_arrange(new_list)
         to_test = sorted_scanned_books[:]
         ordered = x.compare_order(to_test)
 
@@ -125,10 +132,9 @@ def scan_books():
         bs = BookCheck()
         split_library_calls = bs.split_arrange(next_list)
         ordered_library_calls = bs.sort_table(split_library_calls, (0, 1, 2, 3))
+        copy = sorted_scanned_books[:]
 
-        first_scanned = str(sorted_scanned_books[0])
-        last_scanned = str(sorted_scanned_books[-1])
-        list_to_compare = bs.lib_slice(first_scanned, last_scanned, ordered_library_calls)
+        list_to_compare = bs.new_lib_slice(copy, ordered_library_calls)
 
         missing_books = bs.find_missing(list_to_compare, to_test)
         #return str(missing_books)

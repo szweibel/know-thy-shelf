@@ -89,7 +89,8 @@ class BookCheck(object):
                     moved_list.append(incorrectly_filed)
                 misplaced_list.append(book)
                 last_last_book = last_book
-                last_book = correct_list[-1]  # SHOULD BE 'Last TRUE Book'
+                if correct_list:
+                    last_book = correct_list[-1]  # SHOULD BE 'Last TRUE Book'
                 #print last_book, book
             else:
                 print "Error!"
@@ -126,7 +127,7 @@ class BookCheck(object):
         elif book in wrong_list:
             return book, 'M'
         else:
-            return 'X'
+            return book, 'X'
 
     def find_missing(self, library_slice, scan_slice):
 
@@ -148,13 +149,13 @@ class BookCheck(object):
             else:
                 continue
 
-    # Take the corresponding part of the library to the scan, to compare them.
-    # To be used with filter(library_slice(), whole_library)
-    # def library_slice(self, first_scanned, last_scanned, library_book):
-    #     if library_book >= first_scanned and library_book <= last_scanned:
-    #         return True
-    #     else:
-    #         return False
+    def new_lib_slice(self, scanned_list, library_list):
+
+        first_scanned = scanned_list[0]
+        start = self.scan_spot_find(first_scanned, library_list)
+        print len(scanned_list) + 2
+        right_set = library_list[start:len(scanned_list) + 2]
+        return right_set
 
     #MARK II
     # Take the corresponding part of the library to the scan, to compare them.
@@ -170,23 +171,28 @@ class BookCheck(object):
             if scanned == book:
                 return key
 
+    def find_call_from_tag(self, tag, call_number_dict):
+        for index, book in call_number_dict.items():
+            if tag == index:
+                return book
 
-scanned_books = ['AA240 B142 1999',  'AA240.B14323 1956', 'AA240 B142 2000', 'AB240.B14.C22 1976',
-'AB101.B14.K12 1976', 'AB10.B14.K12 1976', 'JR364 .H876 .G52 1946', 'CK364 .H876 .G52 1946', 'R4364 .K6 .I52 1995']
+scanned_books = ['AA240 B142 2000', 'AB240.B14.C22 1976', 'AB101.B14.K12 1976',
+'AB10.B14.K12 1976', 'CK364 .H876 .G52 1946']
 
 correct_books = ['AA240 B142 1999', 'AA240 B142 2000', 'AA240.B14323 1956', 'AB10.B14.K12 1976',
-'AB101.B14.K12 1976', 'AB240.B14.C22 1976', 'CK364 .H876 .G52 1946', 'J4375 .H876 .G52 1946', 'JR437 .K6 .I52 1995']
+'AB101.B14.K12 1976', 'AB240.B14.C22 1976', 'CK364 .H876 .G52 1946', 'J4375 .H876 .G52 1946',
+'JR437 .K6 .I52 1995']
 
-u = BookCheck()
+# u = BookCheck()
 
-h = u.split_arrange(correct_books)
+# h = u.split_arrange(correct_books)
+# #print h
 
-fake_library = [range(100)]
+#         #list_to_compare not working... Or, it works but doesn't work right. Needs to include last book.
+# list_to_compare = u.new_lib_slice(scanned_books, correct_books)
+# print list_to_compare
+# fake_list = [2, 3, 4, 5, 70, 60, 6, 10, 9, 13, 11, 12, 14, 15, 16, 50, 510, 17]
 
-fake_list = [2, 3, 4, 5, 70, 60, 6, 10, 9, 13, 11, 12, 14, 15, 16, 50, 510, 17]
+# fake_list2 = [1, 2, 3, 4, 10, 5, 6, 7, 8, 9, 11, 12, 13, 14]
 
-fake_list2 = [1, 2, 3, 4, 10, 5, 6, 7, 8, 9, 11, 12, 13, 14]
-#print 'Unordered: ', fake_list
-#print x.compare_order(fake_list2)
-r = u.sort_table(h, (0, 1, 2, 3))
-#print r
+# print u.compare_order(fake_list2)
