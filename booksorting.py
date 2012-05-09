@@ -24,8 +24,10 @@ class BookCheck(object):
         # if len(call_number) is 4:
         #     call_number.insert(3, call_number.pop(2))
         #     a = join_call_number(call_number)
+            if call_number[0] is 'u':
+                del call_number[0]
             if len(call_number) is 3:
-                call_number.insert(2, 0)
+                call_number.insert(2, '0')
         return call_list
 
     def sort_table(self, table, cols):
@@ -54,13 +56,14 @@ class BookCheck(object):
         rehabilitated_list = []
 
         for index, book in enumerate(booklist):
-            print 'correct: ', correct_list
-            print 'wrong: ', misplaced_list
-            print 'Moved back from correct: ', moved_list
-            print 'Looking at: ', book, '>', last_book, '?'
-            print 'rehabilitated: ', rehabilitated_list
-            print "Gapped list: ", self.gapped_list
-            print '__________'
+            # print 'correct: ', correct_list
+            # print 'wrong: ', misplaced_list
+            # print 'Moved back from correct: ', moved_list
+            # print 'Looking at: ', book, '>', last_book, '?'
+            # print 'rehabilitated: ', rehabilitated_list
+            # print "Gapped list: ", self.gapped_list
+            # print '__________'
+
             if self.order(book, last_book):
                 correct_list.append(book)
                 #if the last book is below this one, make the last book correct
@@ -70,7 +73,7 @@ class BookCheck(object):
                         hh = self.gapped_list[-1]
                         print "yay!",  hh, "saved!"
                         rehabilitated_list.append(hh)
-                        rehabilitated_list.append(last_last_book)
+                        #?rehabilitated_list.append(last_last_book)
                         self.gapped_list.remove(hh)
                     # if self.order(book, last_last_book, last_book):
                     #     rehabilitated_list.append(last_last_book)
@@ -125,6 +128,18 @@ class BookCheck(object):
         else:
             return 'X'
 
+    def find_missing(self, library_slice, scan_slice):
+
+        # print "Missing books: "
+        # print list(set(library_slice).difference(set(scan_slice)))
+        # print "Extra books: "
+        # print list(set(scan_slice).difference(set(library_slice)))
+        lost_list = []
+        for book in library_slice:
+            if book not in scan_slice:
+                lost_list.append(book)
+        return lost_list
+
     # Determine if a book would fit earlier in the bookshelf
     def shelf_gap(self, misplaced_book, earlier_books, ordered_books):
         for index, earlier_book in enumerate(earlier_books):
@@ -135,34 +150,43 @@ class BookCheck(object):
 
     # Take the corresponding part of the library to the scan, to compare them.
     # To be used with filter(library_slice(), whole_library)
-    def library_slice(self, first_scanned, last_scanned, library_book):
-        if library_book >= first_scanned and library_book <= last_scanned:
-            return True
-        else:
-            return False
+    # def library_slice(self, first_scanned, last_scanned, library_book):
+    #     if library_book >= first_scanned and library_book <= last_scanned:
+    #         return True
+    #     else:
+    #         return False
 
+    #MARK II
     # Take the corresponding part of the library to the scan, to compare them.
-    # Send the index, not the value, of the book. Probably should make the net wider.
+    # Probably should make the net wider.
     def lib_slice(self, first_scanned, last_scanned, library_list):
-        list_to_compare = library_list[first_scanned:last_scanned]
+        the_first = self.scan_spot_find(first_scanned, library_list)
+        the_last = self.scan_spot_find(last_scanned, library_list)
+        list_to_compare = library_list[the_first:the_last]
         return list_to_compare
+
+    def scan_spot_find(self, scanned, library_list):
+        for key, book in enumerate(library_list):
+            if scanned == book:
+                return key
+
 
 scanned_books = ['AA240 B142 1999',  'AA240.B14323 1956', 'AA240 B142 2000', 'AB240.B14.C22 1976',
 'AB101.B14.K12 1976', 'AB10.B14.K12 1976', 'JR364 .H876 .G52 1946', 'CK364 .H876 .G52 1946', 'R4364 .K6 .I52 1995']
 
-correct_books = (['AA240 B142 1999', 'AA240 B142 2000', 'AA240.B14323 1956', 'AB10.B14.K12 1976',
-'AB101.B14.K12 1976', 'AB240.B14.C22 1976', 'CK364 .H876 .G52 1946', 'J4375 .H876 .G52 1946', 'JR437 .K6 .I52 1995'])
+correct_books = ['AA240 B142 1999', 'AA240 B142 2000', 'AA240.B14323 1956', 'AB10.B14.K12 1976',
+'AB101.B14.K12 1976', 'AB240.B14.C22 1976', 'CK364 .H876 .G52 1946', 'J4375 .H876 .G52 1946', 'JR437 .K6 .I52 1995']
 
-x = BookCheck()
+u = BookCheck()
 
-v = x.split_arrange(correct_books)
+h = u.split_arrange(correct_books)
 
 fake_library = [range(100)]
 
 fake_list = [2, 3, 4, 5, 70, 60, 6, 10, 9, 13, 11, 12, 14, 15, 16, 50, 510, 17]
-#fake_bookshelf = fake_library[(
+
 fake_list2 = [1, 2, 3, 4, 10, 5, 6, 7, 8, 9, 11, 12, 13, 14]
 #print 'Unordered: ', fake_list
-print x.compare_order(fake_list2)
-r = x.sort_table(v, (0, 1, 2, 3))
+#print x.compare_order(fake_list2)
+r = u.sort_table(h, (0, 1, 2, 3))
 #print r

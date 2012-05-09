@@ -93,31 +93,46 @@ def display_forum():
 @route('/scan', method='GET')
 def scan_books():
     test_list = []
+    next_list = []
     if request.GET.get('save', '').strip():
         list_of_tags = request.GET.get('tags', '').strip()
-        
+
         sanitized_list = list_of_tags.split('\r\n')
 
-        # conn = sqlite3.connect('tada.db')
-        # c = conn.cursor()
-        # c.execute("SELECT tag, call_number FROM tada")
-        # result = dict(c.fetchall())
-        # c.close()
-        # for ident, book in enumerate(sanitized_list):
-        #     for tag, value in result.items():
-        #         if book in sanitized_list:
-        #             sanitized_list[ident] = value
-        # for tag, value in result.items():
-        #     for ident, book in enumerate(sanitized_list):
-        #         if not book in result:
-        #             pass
-        #             sanitized_list[ident] = value
-        #             test_list.append(value)
+        # to find books for order
+        conn = sqlite3.connect('tada.db')
+        c = conn.cursor()
+        c.execute("SELECT tag, call_number FROM tada")
+        result = dict(c.fetchall())
+        c.close()
+
+        # to find books for missing
+        d = conn.cursor()
+        d.execute("SELECT call_number FROM tada")
+        library_calls = d.fetchall()
+        d.close()
+
+        for index, book in result.items():
+            if index in sanitized_list:
+                test_list.append(str(book))
         x = BookCheck()
-        v = x.split_arrange(sanitized_list)
-        send = x.compare_order(v)
-        #return str(sanitized_list)
-        return template('after_scan', books=send)
+        sorted_scanned_books = x.split_arrange(test_list)
+        to_test = sorted_scanned_books[:]
+        ordered = x.compare_order(to_test)
+
+        for book in library_calls:
+            next_list.append(str(book))
+        bs = BookCheck()
+        split_library_calls = bs.split_arrange(next_list)
+        ordered_library_calls = bs.sort_table(split_library_calls, (0, 1, 2, 3))
+
+        first_scanned = str(sorted_scanned_books[0])
+        last_scanned = str(sorted_scanned_books[-1])
+        list_to_compare = bs.lib_slice(first_scanned, last_scanned, ordered_library_calls)
+
+        missing_books = bs.find_missing(list_to_compare, to_test)
+        #return str(missing_books)
+        return template('after_scan', books=ordered, missing=missing_books)
     else:
         return template('scan_books')
 
