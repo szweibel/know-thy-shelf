@@ -138,7 +138,6 @@ def scan_books():
                 boo.append(part)
                 boo.append(' ')
             bla.append(book)
-        #return str(bla)
         return template('after_scan', books=ordered, missing=bla)
     else:
         return template('scan_books')

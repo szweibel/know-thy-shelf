@@ -3,7 +3,7 @@
 <p>
 <ul class="bookshelf">
 %for book in books:
-        %da = book[0].replace(' 0 ', ' ')
+        %da = book[0].replace(' 0', ' ')
     <dt class="{{book[1]}}">{{da}}</dt>
 
 %end
@@ -18,7 +18,7 @@
 <p>MISSING: <p>
 %for book in missing:
     %ka = ' '.join(book)
-    %fa = ka.replace(' 0 ', ' ')
+    %fa = ka.replace(' 0', ' ')
     <p class="missing">{{fa}}</p>
 %end
 

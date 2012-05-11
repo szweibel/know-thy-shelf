@@ -21,14 +21,22 @@ class BookCheck(object):
 
     def rearrange_call_number(self, call_list):
         for index, call_number in enumerate(call_list):
-        # if len(call_number) is 4:
-        #     call_number.insert(3, call_number.pop(2))
-        #     a = join_call_number(call_number)
             if call_number[0] is 'u':
                 del call_number[0]
+            # if len(call_number) is 5:
+            if len(call_number) is 4:
+                call_number.insert(1, '0')
             if len(call_number) is 3:
+                call_number.insert(1, '0')
                 call_number.insert(2, '0')
         return call_list
+
+    def is_number(s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
 
     def sort_table(self, table, cols):
         """ sort a table by multiple columns
@@ -94,8 +102,8 @@ class BookCheck(object):
                 #print last_book, book
             else:
                 print "Error!"
-        print "misplaced list: ", misplaced_list
-        print "correct: ", correct_list
+        #print "misplaced list: ", misplaced_list
+        #print "correct: ", correct_list
 
         newest_list = booklist[:]
         for index, book in enumerate(newest_list):
@@ -121,24 +129,14 @@ class BookCheck(object):
     def final_order(self, book, wrong_list, correct_list, rehabilitated_list):
 
         if book in correct_list:
-            # if book[2] is '0':
-            #     del book[2]
             return [' '.join(book), 'correct']
         elif book in rehabilitated_list:
-            # if book[2] is '0':
-            #     del book[2]
             return ' '.join(book), 'rehabilitated'
         elif book in self.gapped_list:
-            # if book[2] is '0':
-            #     del book[2]
             return ' '.join(book), 'gapped'
         elif book in wrong_list:
-            # if book[2] is '0':
-            #     del book[2]
             return ' '.join(book), 'misplaced'
         else:
-            # if book[2] is '0':
-            #     del book[2]
             return ' '.join(book), 'BAD'
 
     def find_missing(self, library_slice, scan_slice):
@@ -162,7 +160,7 @@ class BookCheck(object):
         last_scanned = scanned_list[-1]
         start = self.scan_spot_find(first_scanned, library_list)
         end = self.scan_spot_find(last_scanned, library_list)
-        print start, end
+        #print start, end
         right_set = library_list[start:end]
         return right_set
 
@@ -181,7 +179,7 @@ scanned_books = ['AA240 B142 2000', 'AB240.B14.C22 1976', 'AB101.B14.K12 1976',
 'AB10.B14.K12 1976', 'CK364 .H876 .G52 1946']
 
 correct_books = ['AA240 B142 1999', 'AA240 B142 2000', 'AA240.B14323 1956', 'AB10.B14.K12 1976',
-'AB101.B14.K12 1976', 'AB240.B14.C22 1976', 'CK364 .H876 .G52 1946', 'J4375 .H876 .G52 1946',
+'AB101.B14.K12 1976', 'AB240.7.B14 C22 1976', 'CK364.54 .G52 1946', 'J4375 .H876 .G52 1946',
 'JR437 .K6 .I52 1995']
 
 u = BookCheck()
@@ -189,13 +187,13 @@ u = BookCheck()
 h = u.split_arrange(correct_books)
 
 i = u.split_arrange(scanned_books)
-# #print h
+#print h
 
-    #list_to_compare not working... Or, it works but doesn't work right. Needs to include last book.
+#list_to_compare not working... Or, it works but doesn't work right. Needs to include last book.
 list_to_compare = u.new_lib_slice(i, h)
-print "Scanned: ", scanned_books
+#print "Scanned: ", scanned_books
 # fake_list = [2, 3, 4, 5, 70, 60, 6, 10, 9, 13, 11, 12, 14, 15, 16, 50, 510, 17]
 
-# fake_list2 = [1, 2, 3, 4, 10, 5, 6, 7, 8, 9, 11, 12, 13, 14]
+fake_list2 = [1, 2, 3, 4, 10, 5, 6, 70, 71, 72, 7, 8, 9, 11, 12, 13, 14]
 
-# print u.compare_order(fake_list2)
+#print u.compare_order(fake_list2)
