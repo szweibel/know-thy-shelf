@@ -4,12 +4,14 @@
 <meta name="description" content="Determine Library book order and inventory">
 <meta name="author" content="SZ">
 <LINK REL=StyleSheet HREF="http://localhost:8080/static/bootstrap.css" TYPE="text/css" MEDIA=screen>
+<LINK REL=StyleSheet HREF="http://localhost:8080/static/bookshelf.css" TYPE="text/css">
 <title>{{title or 'No title'}}</title>
 
 <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
       }
+
 </style>
 
 </head>

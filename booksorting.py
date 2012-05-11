@@ -97,9 +97,10 @@ class BookCheck(object):
         print "misplaced list: ", misplaced_list
         print "correct: ", correct_list
 
-        for index, book in enumerate(booklist):
+        newest_list = booklist[:]
+        for index, book in enumerate(newest_list):
             order_list.append(self.final_order(book, misplaced_list, correct_list, rehabilitated_list))
-            booklist[index] = self.final_order(book, misplaced_list, correct_list, rehabilitated_list)
+            newest_list[index] = self.final_order(book, misplaced_list, correct_list, rehabilitated_list)
 
         return order_list
 
@@ -116,25 +117,31 @@ class BookCheck(object):
             else:
                 return False
 
-    # Place labels on the final list of books, to show their order status
+    # Place labels on the final list of books, and remove empty columns, to show call number order
     def final_order(self, book, wrong_list, correct_list, rehabilitated_list):
+
         if book in correct_list:
-            return book, 'O'
+            # if book[2] is '0':
+            #     del book[2]
+            return [' '.join(book), 'correct']
         elif book in rehabilitated_list:
-            return book, '?'
+            # if book[2] is '0':
+            #     del book[2]
+            return ' '.join(book), 'rehabilitated'
         elif book in self.gapped_list:
-            return book, '!'
+            # if book[2] is '0':
+            #     del book[2]
+            return ' '.join(book), 'gapped'
         elif book in wrong_list:
-            return book, 'M'
+            # if book[2] is '0':
+            #     del book[2]
+            return ' '.join(book), 'misplaced'
         else:
-            return book, 'X'
+            # if book[2] is '0':
+            #     del book[2]
+            return ' '.join(book), 'BAD'
 
     def find_missing(self, library_slice, scan_slice):
-
-        # print "Missing books: "
-        # print list(set(library_slice).difference(set(scan_slice)))
-        # print "Extra books: "
-        # print list(set(scan_slice).difference(set(library_slice)))
         lost_list = []
         for book in library_slice:
             if book not in scan_slice:
@@ -152,19 +159,12 @@ class BookCheck(object):
     def new_lib_slice(self, scanned_list, library_list):
 
         first_scanned = scanned_list[0]
+        last_scanned = scanned_list[-1]
         start = self.scan_spot_find(first_scanned, library_list)
-        print len(scanned_list) + 2
-        right_set = library_list[start:len(scanned_list) + 2]
+        end = self.scan_spot_find(last_scanned, library_list)
+        print start, end
+        right_set = library_list[start:end]
         return right_set
-
-    #MARK II
-    # Take the corresponding part of the library to the scan, to compare them.
-    # Probably should make the net wider.
-    def lib_slice(self, first_scanned, last_scanned, library_list):
-        the_first = self.scan_spot_find(first_scanned, library_list)
-        the_last = self.scan_spot_find(last_scanned, library_list)
-        list_to_compare = library_list[the_first:the_last]
-        return list_to_compare
 
     def scan_spot_find(self, scanned, library_list):
         for key, book in enumerate(library_list):
@@ -176,6 +176,7 @@ class BookCheck(object):
             if tag == index:
                 return book
 
+
 scanned_books = ['AA240 B142 2000', 'AB240.B14.C22 1976', 'AB101.B14.K12 1976',
 'AB10.B14.K12 1976', 'CK364 .H876 .G52 1946']
 
@@ -183,14 +184,16 @@ correct_books = ['AA240 B142 1999', 'AA240 B142 2000', 'AA240.B14323 1956', 'AB1
 'AB101.B14.K12 1976', 'AB240.B14.C22 1976', 'CK364 .H876 .G52 1946', 'J4375 .H876 .G52 1946',
 'JR437 .K6 .I52 1995']
 
-# u = BookCheck()
+u = BookCheck()
 
-# h = u.split_arrange(correct_books)
+h = u.split_arrange(correct_books)
+
+i = u.split_arrange(scanned_books)
 # #print h
 
-#         #list_to_compare not working... Or, it works but doesn't work right. Needs to include last book.
-# list_to_compare = u.new_lib_slice(scanned_books, correct_books)
-# print list_to_compare
+    #list_to_compare not working... Or, it works but doesn't work right. Needs to include last book.
+list_to_compare = u.new_lib_slice(i, h)
+print "Scanned: ", scanned_books
 # fake_list = [2, 3, 4, 5, 70, 60, 6, 10, 9, 13, 11, 12, 14, 15, 16, 50, 510, 17]
 
 # fake_list2 = [1, 2, 3, 4, 10, 5, 6, 7, 8, 9, 11, 12, 13, 14]
