@@ -1,55 +1,32 @@
-.callnumber{
-
+.leftTrue {
+    width: 45px;
+    height: 144px;
+    background: #34FA11;
+    margin-right: 0px;
+    float: left;
 }
 
-.placement{
-
+.leftFalse {
+    width: 45px;
+    height: 144px;
+    background: #FF0000;
+    margin-right: 0px;
+    float: left;
 }
 
-.correct {
-    width: 50px;
+
+.rightTrue {
+    width: 45px;
     height: 144px;
     background: #34FA11;
     margin-right: 5px;
     float: left;
 }
 
-.gapped {
-    width: 50px;
-    height: 144px;
-    background: #FF00D0;
-    margin-right: 5px;
-    float: left;
-}
-
-.misplaced {
-    width: 50px;
+.rightFalse {
+    width: 45px;
     height: 144px;
     background: #FF0000;
-    margin-right: 5px;
-    float: left;
-}
-
-.rehabilitated {
-    width: 50px;
-    height: 144px;
-    background: #FFFB00;
-    margin-right: 5px;
-    float: left;
-}
-
-.BAD {
-    width: 144px;
-    height: 144px;
-    background: #FF00CC;
-    margin-right: 48px;
-    float: left;
-}
-
-.missing {
-    width: 50px;
-    height: 144px;
-    background: #2F57A1;
     margin-right: 5px;
     float: left;
 }

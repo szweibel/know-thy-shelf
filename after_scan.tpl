@@ -3,8 +3,10 @@
 <p>
 <ul class="bookshelf">
 %for book in books:
-        %da = book[0].replace(' 0', ' ')
-    <dt class="{{book[1]}}">{{da}}</dt>
+    %sa = ' '.join(book[0])
+    %call_number = sa.replace(' 0', ' ')
+    <dt class="left{{book[1]}}">{{call_number}}</dt>
+    <dt class="right{{book[2]}}"></dt>
 
 %end
 </ul>
@@ -12,13 +14,5 @@
 <p>Key:</p>
 <p>Green: Correct</p>
 <p>Red: Misplaced</p>
-<p>Blue?: Weirdness</p>
-<p>Purple?: More Weirdness, Likely Correct</p>
 <div>---------------------</div>
-<p>MISSING: <p>
-%for book in missing:
-    %ka = ' '.join(book)
-    %fa = ka.replace(' 0', ' ')
-    <p class="missing">{{fa}}</p>
-%end
 
