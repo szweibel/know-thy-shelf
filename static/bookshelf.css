@@ -1,7 +1,7 @@
 .leftTrue {
     width: 45px;
     height: 144px;
-    background: #34FA11;
+    background: #0fb82c;
     margin-right: 0px;
     float: left;
 }
@@ -18,7 +18,7 @@
 .rightTrue {
     width: 45px;
     height: 144px;
-    background: #34FA11;
+    background: #0fb82c;
     margin-right: 5px;
     float: left;
 }
@@ -27,6 +27,14 @@
     width: 45px;
     height: 144px;
     background: #FF0000;
+    margin-right: 5px;
+    float: left;
+}
+
+.missing {
+    width: 90px;
+    height: 144px;
+    background: #c3e713;
     margin-right: 5px;
     float: left;
 }

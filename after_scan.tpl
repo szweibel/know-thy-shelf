@@ -1,5 +1,5 @@
 %include header_template title="Know Thy Shelf"
-
+<div>
 <p>
 <ul class="bookshelf">
 %for book in books:
@@ -14,5 +14,12 @@
 <p>Key:</p>
 <p>Green: Correct</p>
 <p>Red: Misplaced</p>
+</div>
 <div>---------------------</div>
-
+<div>
+%for call_number in missing:
+    %ba = ' '.join(call_number)
+    %clean = ba.replace(' 0',' ')
+    <dt class="missing">{{clean}}</dt>
+%end
+</div>

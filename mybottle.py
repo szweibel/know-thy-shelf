@@ -26,9 +26,9 @@ def new_item():
         newtag = request.GET.get('tag', '').strip()
         conn = sqlite3.connect('tada.db')
         c = conn.cursor()
+        
 
         c.execute("INSERT INTO tada (call_number,tag,status) VALUES (?,?,?)", (new, newtag, 1))
-        #new_id = c.lastrowid
 
         conn.commit()
         c.close()
@@ -113,12 +113,12 @@ def scan_books():
         library_calls = d.fetchall()
         d.close()
 
+        #Find order of books
         for book in library_calls:
             next_list.append(str(book))
         bs = BookCheck()
         split_library_calls = bs.split_arrange(next_list)
         ordered_library_calls = bs.sort_table(split_library_calls, (0, 1, 2, 3))
-
         x = BookCheck()
         out = [x.find_call_from_tag(tag, result) for tag in sanitized_list]
         new_list = []
@@ -129,16 +129,17 @@ def scan_books():
         copy = sorted_scanned_books[:]
         ordered = x.final_order(to_test, ordered_library_calls)
 
-        # list_to_compare = bs.new_lib_slice(copy, ordered_library_calls)
-        # missing_books = bs.find_missing(list_to_compare, to_test)
-        # boo = []
-        # bla = []
-        # for book in missing_books:
-        #     for part in book:
-        #         boo.append(part)
-        #         boo.append(' ')
-        #     bla.append(book)
-        return template('after_scan', books=ordered)
+        #Find missing books
+        list_to_compare = bs.new_lib_slice(copy, ordered_library_calls)
+        missing_books = bs.find_missing(list_to_compare, to_test)
+        boo = []
+        bla = []
+        for book in missing_books:
+            for part in book:
+                boo.append(part)
+                boo.append(' ')
+            bla.append(book)
+        return template('after_scan', books=ordered, missing=bla)
     else:
         return template('scan_books')
 
