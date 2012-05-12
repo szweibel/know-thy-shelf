@@ -1,5 +1,5 @@
 %include header_template title="Know Thy Shelf"
-<div>
+<div class="row">
 <p>
 <ul class="bookshelf">
 %for book in books:
@@ -7,7 +7,6 @@
     %call_number = sa.replace(' 0', ' ')
     <dt class="left{{book[1]}}">{{call_number}}</dt>
     <dt class="right{{book[2]}}"></dt>
-
 %end
 </ul>
 </p>
@@ -16,10 +15,13 @@
 <p>Red: Misplaced</p>
 </div>
 <div>---------------------</div>
-<div>
+<div class="row">
+<p>MISSING:</p>
+<ul>
 %for call_number in missing:
     %ba = ' '.join(call_number)
     %clean = ba.replace(' 0',' ')
     <dt class="missing">{{clean}}</dt>
 %end
+</ul>
 </div>
