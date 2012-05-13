@@ -113,6 +113,12 @@ def scan_books():
         library_calls = d.fetchall()
         d.close()
 
+        #Find order of books
+        for book in library_calls:
+            next_list.append(str(book))
+        bs = BookCheck()
+        split_library_calls = bs.split_arrange(next_list)
+        ordered_library_calls = bs.sort_table(split_library_calls, (0, 1, 2, 3))
         x = BookCheck()
         out = [x.find_call_from_tag(tag, result) for tag in sanitized_list]
         new_list = []
@@ -120,15 +126,10 @@ def scan_books():
             new_list.append(str(book))
         sorted_scanned_books = x.split_arrange(new_list)
         to_test = sorted_scanned_books[:]
-        ordered = x.compare_order(to_test)
-
-        for book in library_calls:
-            next_list.append(str(book))
-        bs = BookCheck()
-        split_library_calls = bs.split_arrange(next_list)
-        ordered_library_calls = bs.sort_table(split_library_calls, (0, 1, 2, 3))
         copy = sorted_scanned_books[:]
+        ordered = x.final_order(to_test, ordered_library_calls)
 
+        #Find missing books
         list_to_compare = bs.new_lib_slice(copy, ordered_library_calls)
         missing_books = bs.find_missing(list_to_compare, to_test)
         boo = []

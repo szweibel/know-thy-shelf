@@ -31,6 +31,18 @@ class BookCheck(object):
                 call_number.insert(2, '0')
         return call_list
 
+    def split_and_arrange_single_call_number(self, call_number):
+        call_number = re.findall(r'\w+', call_number)
+        if call_number[0] is 'u':
+            del call_number[0]
+        # if len(call_number) is 5:
+        if len(call_number) is 4:
+            call_number.insert(1, '0')
+        if len(call_number) is 3:
+            call_number.insert(1, '0')
+            call_number.insert(3, '0')
+        return call_number
+
     def is_number(s):
         try:
             float(s)
@@ -53,6 +65,62 @@ class BookCheck(object):
         g = self.call_number_split(call_number_list)
         self.rearrange_call_number(g)
         return g
+
+    def find_left_partner(self, book, full_list):
+        passed_list = []
+        for call_number in full_list:
+            if call_number < book:
+                passed_list.append(call_number)
+                continue
+            else:
+                if passed_list:
+                    return passed_list[-1]
+                else:
+                    return ['0', '0', '0', ]
+
+    def find_right_partner(self, book, full_list):
+        another_passed_list = []
+        for call_number in reversed(full_list):
+            if call_number > book:
+                another_passed_list.append(call_number)
+                continue
+            else:
+                if another_passed_list:
+                    return another_passed_list[-1]
+                else:
+                    return None
+
+    def find_both_partners(self, book, full_list):
+        left_partner = self.find_left_partner(book, full_list)
+        right_partner = self.find_right_partner(book, full_list)
+        return left_partner, right_partner
+
+    def compare_left_order(self, book, scan_list, full_list):
+        ideal_partner = self.find_left_partner(book, full_list)
+        scanned_partner = self.find_left_partner(book, scan_list)
+        if ideal_partner == scanned_partner:
+            return True
+        else:
+            return False
+
+    def compare_right_order(self, book, scan_list, full_list):
+        ideal_partner = self.find_right_partner(book, full_list)
+        scanned_partner = self.find_right_partner(book, scan_list)
+        if ideal_partner == scanned_partner:
+            return True
+        else:
+            return False
+
+    def compare_left_and_right(self, book, scan_list, full_list):
+        a = self.compare_left_order(book, scan_list, full_list)
+        b = self.compare_right_order(book, scan_list, full_list)
+        return (book, a, b)
+
+    def final_order(self, scan_list, full_list):
+        out = []
+        for book in scan_list:
+            out.append(self.compare_left_and_right(book, scan_list, full_list))
+        return out
 
     def compare_order(self, booklist):
         correct_list = []
@@ -107,8 +175,8 @@ class BookCheck(object):
 
         newest_list = booklist[:]
         for index, book in enumerate(newest_list):
-            order_list.append(self.final_order(book, misplaced_list, correct_list, rehabilitated_list))
-            newest_list[index] = self.final_order(book, misplaced_list, correct_list, rehabilitated_list)
+            order_list.append(self.other_final_order(book, misplaced_list, correct_list, rehabilitated_list))
+            newest_list[index] = self.other_final_order(book, misplaced_list, correct_list, rehabilitated_list)
 
         return order_list
 
@@ -126,7 +194,7 @@ class BookCheck(object):
                 return False
 
     # Place labels on the final list of books, and remove empty columns, to show call number order
-    def final_order(self, book, wrong_list, correct_list, rehabilitated_list):
+    def other_final_order(self, book, wrong_list, correct_list, rehabilitated_list):
 
         if book in correct_list:
             return [' '.join(book), 'correct']
@@ -174,9 +242,8 @@ class BookCheck(object):
             if tag == index:
                 return book
 
-
-scanned_books = ['AA240 B142 2000', 'AB240.B14.C22 1976', 'AB101.B14.K12 1976',
-'AB10.B14.K12 1976', 'CK364 .H876 .G52 1946']
+scanned_books = ['AA240 B142 1999', 'AA240 B142 2000', 'AA240.B14323 1956', 'AB10.B14.K12 1976',
+'AB101.B14.K12 1976']
 
 correct_books = ['AA240 B142 1999', 'AA240 B142 2000', 'AA240.B14323 1956', 'AB10.B14.K12 1976',
 'AB101.B14.K12 1976', 'AB240.7.B14 C22 1976', 'CK364.54 .G52 1946', 'J4375 .H876 .G52 1946',
@@ -185,12 +252,13 @@ correct_books = ['AA240 B142 1999', 'AA240 B142 2000', 'AA240.B14323 1956', 'AB1
 u = BookCheck()
 
 h = u.split_arrange(correct_books)
+hh = u.split_arrange(scanned_books)
 
-i = u.split_arrange(scanned_books)
-#print h
+i = u.sort_table(correct_books, (0, 1, 2, 3))
 
-#list_to_compare not working... Or, it works but doesn't work right. Needs to include last book.
-list_to_compare = u.new_lib_slice(i, h)
+print u.final_order(scanned_books, correct_books)
+
+list_to_compare = u.new_lib_slice(hh, h)
 #print "Scanned: ", scanned_books
 # fake_list = [2, 3, 4, 5, 70, 60, 6, 10, 9, 13, 11, 12, 14, 15, 16, 50, 510, 17]
 

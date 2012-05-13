@@ -1,11 +1,3 @@
-.callnumber{
-
-}
-
-.placement{
-
-}
-
 .correct {
     width: 50px;
     height: 144px;
@@ -50,6 +42,47 @@
     width: 50px;
     height: 144px;
     background: #668cd2;
+    margin-right: 5px;
+    float: left;
+}
+
+.leftTrue {
+    width: 45px;
+    height: 144px;
+    background: #0fb82c;
+    margin-right: 0px;
+    float: left;
+}
+
+.leftFalse {
+    width: 45px;
+    height: 144px;
+    background: #FF0000;
+    margin-right: 0px;
+    float: left;
+}
+
+
+.rightTrue {
+    width: 45px;
+    height: 144px;
+    background: #0fb82c;
+    margin-right: 5px;
+    float: left;
+}
+
+.rightFalse {
+    width: 45px;
+    height: 144px;
+    background: #FF0000;
+    margin-right: 5px;
+    float: left;
+}
+
+.missing {
+    width: 90px;
+    height: 144px;
+    background: #c3e713;
     margin-right: 5px;
     float: left;
 }
