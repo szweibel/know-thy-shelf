@@ -17,7 +17,7 @@
 .misplaced {
     width: 50px;
     height: 144px;
-    background: #b82c0f;
+    background: #ed4a28;
     margin-right: 5px;
     float: left;
 }
@@ -57,7 +57,7 @@
 .leftFalse {
     width: 45px;
     height: 144px;
-    background: #FF0000;
+    background: #ed4a28;
     margin-right: 0px;
     float: left;
 }
@@ -74,7 +74,7 @@
 .rightFalse {
     width: 45px;
     height: 144px;
-    background: #FF0000;
+    background: #ed4a28;
     margin-right: 5px;
     float: left;
 }

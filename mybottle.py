@@ -128,6 +128,7 @@ def scan_books():
         to_test = sorted_scanned_books[:]
         copy = sorted_scanned_books[:]
         ordered = x.final_order(to_test, ordered_library_calls)
+        seconded = x.compare_order(copy)
 
         #Find missing books
         list_to_compare = bs.new_lib_slice(copy, ordered_library_calls)
@@ -139,7 +140,7 @@ def scan_books():
                 boo.append(part)
                 boo.append(' ')
             bla.append(book)
-        return template('after_scan', books=ordered, missing=bla)
+        return template('after_scan', books=ordered, secondary=seconded, missing=bla)
     else:
         return template('scan_books')
 

@@ -16,6 +16,21 @@
 </div>
 <div>---------------------</div>
 <div class="row">
+<ul class="bookshelf">
+%for book in secondary:
+        %da = book[0].replace(' 0', ' ')
+    <dt class="{{book[1]}}">{{da}}</dt>
+
+%end
+</ul>
+<p>Key:</p>
+<p>Green: Correct</p>
+<p>Red: Misplaced</p>
+<p>Blue: Weirdness</p>
+<p>Purple: Likely Correct</p>
+</div>
+<div>---------------------</div>
+<div class="row">
 <p>MISSING:</p>
 <ul>
 %for call_number in missing:
