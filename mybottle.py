@@ -26,7 +26,6 @@ def new_item():
         newtag = request.GET.get('tag', '').strip()
         conn = sqlite3.connect('tada.db')
         c = conn.cursor()
-        
 
         c.execute("INSERT INTO tada (call_number,tag,status) VALUES (?,?,?)", (new, newtag, 1))
 

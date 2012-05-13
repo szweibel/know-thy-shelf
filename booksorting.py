@@ -76,7 +76,7 @@ class BookCheck(object):
                 if passed_list:
                     return passed_list[-1]
                 else:
-                    return None
+                    return ['0', '0', '0', ]
 
     def find_right_partner(self, book, full_list):
         another_passed_list = []
