@@ -57,6 +57,14 @@ class BookCheck(object):
         except ValueError:
             return False
 
+    def clean_up_call_numbers(self, call_number_list):
+        clean_list = []
+        for book in call_number_list:
+            x = ' '.join(book)
+            da = x.replace(' 0', '')
+            clean_list.append(da)
+        return clean_list
+
     def sort_table(self, table, cols):
         """ sort a table by multiple columns
             table: a list of lists (or tuple of tuples) where each inner list
@@ -117,12 +125,14 @@ class BookCheck(object):
         b = self.compare_right_order(book, scan_list, full_list)
         return (book, a, b)
 
+    # Create a list by comparing neighbor books
     def final_order(self, scan_list, full_list):
         out = []
         for book in scan_list:
             out.append(self.compare_left_and_right(book, scan_list, full_list))
         return out
 
+    # Main function to determine 'relative' order
     def compare_order(self, booklist):
         correct_list = []
         misplaced_list = []
@@ -176,12 +186,12 @@ class BookCheck(object):
 
         newest_list = booklist[:]
         for index, book in enumerate(newest_list):
-            order_list.append(self.other_final_order(book, misplaced_list, correct_list, rehabilitated_list))
-            newest_list[index] = self.other_final_order(book, misplaced_list, correct_list, rehabilitated_list)
+            order_list.append(self.dynamic_final_order(book, misplaced_list, correct_list, rehabilitated_list))
+            newest_list[index] = self.dynamic_final_order(book, misplaced_list, correct_list, rehabilitated_list)
 
         return order_list
 
-    #Determine whether a book is in the right place
+    # Determine whether a book is in the right place
     def order(self, x, y, z=None):
         if not z:
             if x >= y:
@@ -195,7 +205,7 @@ class BookCheck(object):
                 return False
 
     # Place labels on the final list of books, and remove empty columns, to show call number order
-    def other_final_order(self, book, wrong_list, correct_list, rehabilitated_list):
+    def dynamic_final_order(self, book, wrong_list, correct_list, rehabilitated_list):
 
         if book in correct_list:
             return [' '.join(book), 'correct']
@@ -208,6 +218,7 @@ class BookCheck(object):
         else:
             return ' '.join(book), 'BAD'
 
+    # Find which books are missing in a scan
     def find_missing(self, library_slice, scan_slice):
         lost_list = []
         for book in library_slice:
@@ -223,6 +234,7 @@ class BookCheck(object):
             else:
                 continue
 
+    # Get the part of the library appropriate to compare to the scanned list
     def new_lib_slice(self, scanned_list, library_list):
 
         first_scanned = scanned_list[0]
@@ -233,15 +245,25 @@ class BookCheck(object):
         right_set = library_list[start:end]
         return right_set
 
+    # Get the index, in the full list, of a scanned book
     def scan_spot_find(self, scanned, library_list):
         for key, book in enumerate(library_list):
             if scanned == book:
                 return key
 
+    # Switch the tag with the call number
     def find_call_from_tag(self, tag, call_number_dict):
         for index, book in call_number_dict.items():
             if tag == index:
                 return book
+
+    def find_id_from_call(self, call_number, id_dict):
+        for index, book in id_dict.items():
+            if call_number == book:
+                return index
+
+id_dict = {"2": "AA240 B142 2000", "3": 'AA240 B142 1999', "9": "TR765 7 G23 I71 1896", "10": "HN657 N76 1982", "12": "CK364 H876 G52 1946",
+"13": "AC875 L65 1956", "14": "Z99 U10 T49 1949", "15": "AA240 G22 2012"}
 
 scanned_books = ['AA240 B142 2000', 'AA240 B142 1999', 'AA240.B14323 1956', 'AB10.B14.K12 1976',
 'AB101.B14.K12 1976']
@@ -251,6 +273,12 @@ correct_books = ['AA240 B142 1999', 'AA240 B142 2000', 'AA240.B14323 1956', 'AB1
 'JR437 .K6 .I52 1995']
 
 u = BookCheck()
+
+last_list = []
+for book in scanned_books:
+            j = u.find_id_from_call(book, id_dict)
+            last_list.append(j)
+print last_list
 
 h = u.split_arrange(correct_books)
 hh = u.split_arrange(scanned_books)

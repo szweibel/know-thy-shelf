@@ -12,10 +12,16 @@ def static(path):
 def book_list():
     conn = sqlite3.connect('tada.db')
     c = conn.cursor()
-    c.execute("SELECT id, tag, call_number FROM tada")
+    c.execute("SELECT id, tag, call_number FROM tada WHERE status = 1")
     result = c.fetchall()
     c.close()
-    output = template('book_table', rows=result)
+
+    d = conn.cursor()
+    d.execute("SELECT id, tag, call_number FROM tada WHERE status = 0")
+    lost = d.fetchall()
+    d.close()
+
+    output = template('book_table', rows=result, lost=lost)
     return output
 
 
@@ -67,11 +73,8 @@ def edit_item(no):
         c = conn.cursor()
         c.execute("UPDATE tada SET call_number = ?, tag = ?, status = ? WHERE id LIKE ?", (joined, tag, status, no))
         conn.commit()
-
         return '<p>The item number %s was successfully updated. <a href="/books">Home</a></p>' % no
-
     else:
-
         conn = sqlite3.connect('tada.db')
         c = conn.cursor()
         c.execute("SELECT call_number FROM tada WHERE id LIKE ?", [(str(num))])
@@ -83,14 +86,19 @@ def edit_item(no):
         cur_data_tag = d.fetchone()
         d.close()
 
-        return template('edit_book', old=cur_data, oldtag=cur_data_tag, no=no)
+        r = conn.cursor()
+        r.execute("SELECT status FROM tada WHERE id = ?", [(str(num))])
+        cur_data_status = r.fetchone()
+        r.close()
+
+        return template('edit_book', old=cur_data, oldtag=cur_data_tag, oldstat=cur_data_status, no=no)
 
 
-@route('/forum')
-def display_forum():
-    forum_id = request.query.id
-    page = request.query.page or '1'
-    return 'Forum ID: %s (page %s)' % (forum_id, page)
+# @route('/forum')
+# def display_forum():
+#     forum_id = request.query.id
+#     page = request.query.page or '1'
+#     return 'Forum ID: %s (page %s)' % (forum_id, page)
 
 
 @route('/scan', method='GET')
@@ -114,7 +122,15 @@ def scan_books():
         d = conn.cursor()
         d.execute("SELECT call_number FROM tada")
         library_calls = d.fetchall()
+        all_books = library_calls[:]
         d.close()
+
+        # to find the IDs of books
+        l = conn.cursor()
+        l.execute("SELECT id, call_number FROM tada")
+        calls_with_ids = dict(l.fetchall())
+        l.close()
+        #return calls_with_ids
 
         #Find order of books
         for book in library_calls:
@@ -143,6 +159,30 @@ def scan_books():
                 boo.append(part)
                 boo.append(' ')
             bla.append(book)
+
+        # Determine found books vs. lost books
+        lost_books = bla[:]
+        found_books = [x for x in sorted_scanned_books if x not in lost_books]
+        cleaned_lost = bs.clean_up_call_numbers(lost_books)
+        cleaned_found = bs.clean_up_call_numbers(found_books)
+        last_lost_list = []
+        for book in cleaned_lost:
+            j = bs.find_id_from_call(book, calls_with_ids)
+            last_lost_list.append(str(j))
+
+        #TRYING TO CHANGE TABLE TO UPDATE 'MISSING' OR 'FOUND' BOOKS
+        conn = sqlite3.connect('tada.db')
+        r = conn.cursor()
+        for book in last_lost_list:
+            r.execute("UPDATE tada SET status = 0 WHERE id LIKE ?", (book,))
+        conn.commit()
+
+        conn = sqlite3.connect('tada.db')
+        g = conn.cursor()
+        for bookf in cleaned_found:
+            g.execute("UPDATE tada SET status = 1 WHERE call_number = ?", (bookf,))
+        conn.commit()
+
         return template('after_scan', books=ordered, secondary=seconded, missing=bla)
     else:
         return template('scan_books')
