@@ -23,19 +23,26 @@ class BookCheck(object):
         for index, call_number in enumerate(call_list):
             if call_number[0] is 'u':
                 del call_number[0]
-            # if len(call_number) is 5:
             if len(call_number) is 4:
                 call_number.insert(1, '0')
             if len(call_number) is 3:
                 call_number.insert(1, '0')
-                call_number.insert(2, '0')
+                call_number.insert(3, '0')
         return call_list
+
+    def just_split_call_number(self, call_number):
+        call_number = re.findall(r'\w+', call_number)
+        return call_number
+
+    def split_arrange(self, call_number_list):
+        g = self.call_number_split(call_number_list)
+        self.rearrange_call_number(g)
+        return g
 
     def split_and_arrange_single_call_number(self, call_number):
         call_number = re.findall(r'\w+', call_number)
         if call_number[0] is 'u':
             del call_number[0]
-        # if len(call_number) is 5:
         if len(call_number) is 4:
             call_number.insert(1, '0')
         if len(call_number) is 3:
@@ -61,34 +68,23 @@ class BookCheck(object):
             table = sorted(table, key=operator.itemgetter(col))
         return table
 
-    def split_arrange(self, call_number_list):
-        g = self.call_number_split(call_number_list)
-        self.rearrange_call_number(g)
-        return g
-
     def find_left_partner(self, book, full_list):
-        passed_list = []
-        for call_number in full_list:
-            if call_number < book:
-                passed_list.append(call_number)
-                continue
-            else:
-                if passed_list:
-                    return passed_list[-1]
-                else:
-                    return ['0', '0', '0', ]
+        print book, full_list[0]
+        if book != full_list[0]:
+            try:
+                x = full_list.index(book) - 1
+                return full_list[x]
+            except IndexError:
+                return ['0', '0', '0', '0', '0']
+        else:
+            return ['0', '0', '0', '0', '0']
 
     def find_right_partner(self, book, full_list):
-        another_passed_list = []
-        for call_number in reversed(full_list):
-            if call_number > book:
-                another_passed_list.append(call_number)
-                continue
-            else:
-                if another_passed_list:
-                    return another_passed_list[-1]
-                else:
-                    return None
+        try:
+            x = full_list.index(book) + 1
+            return full_list[x]
+        except IndexError:
+            return ['ZZZZ', 'ZZZZ', 'ZZZZ', 'ZZZZ', 'ZZZZ']
 
     def find_both_partners(self, book, full_list):
         left_partner = self.find_left_partner(book, full_list)
@@ -97,7 +93,10 @@ class BookCheck(object):
 
     def compare_left_order(self, book, scan_list, full_list):
         ideal_partner = self.find_left_partner(book, full_list)
+        print "FOR BOOK: ", book
+        print "Ideal left: ", ideal_partner
         scanned_partner = self.find_left_partner(book, scan_list)
+        print "scanned left: ", scanned_partner
         if ideal_partner == scanned_partner:
             return True
         else:
@@ -105,7 +104,9 @@ class BookCheck(object):
 
     def compare_right_order(self, book, scan_list, full_list):
         ideal_partner = self.find_right_partner(book, full_list)
+        print "Ideal right: ", ideal_partner
         scanned_partner = self.find_right_partner(book, scan_list)
+        print "scanned right: ", scanned_partner
         if ideal_partner == scanned_partner:
             return True
         else:
@@ -242,7 +243,7 @@ class BookCheck(object):
             if tag == index:
                 return book
 
-scanned_books = ['AA240 B142 1999', 'AA240 B142 2000', 'AA240.B14323 1956', 'AB10.B14.K12 1976',
+scanned_books = ['AA240 B142 2000', 'AA240 B142 1999', 'AA240.B14323 1956', 'AB10.B14.K12 1976',
 'AB101.B14.K12 1976']
 
 correct_books = ['AA240 B142 1999', 'AA240 B142 2000', 'AA240.B14323 1956', 'AB10.B14.K12 1976',
@@ -256,7 +257,7 @@ hh = u.split_arrange(scanned_books)
 
 i = u.sort_table(correct_books, (0, 1, 2, 3))
 
-print u.final_order(scanned_books, correct_books)
+#print u.final_order(scanned_books, correct_books)
 
 list_to_compare = u.new_lib_slice(hh, h)
 #print "Scanned: ", scanned_books

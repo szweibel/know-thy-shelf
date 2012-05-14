@@ -1,15 +1,12 @@
 %include header_template title="Know Thy Shelf"
 
-%#template to generate a HTML table from a list of tuples (or list of lists, or tuple of tuples or ...)
+
 <p>Know Thy Shelf:</p>
 <table border="1">
 %for row in rows:
-    %list1 = list(row)
+    %cols = list(row)
   <tr>
-    %for col in row:
-    <td><a href="/edit/{{list1[0]}}">{{col}}</td></a>
-    %#<td>{{col}}</td>
-  %end
+    <td><a href="/edit/{{cols[0]}}">{{cols[2]}}</td></a>
   </tr>
 %end
 </table>

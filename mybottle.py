@@ -23,13 +23,13 @@ def book_list():
 def new_item():
     if request.GET.get('save', '').strip():
         new = request.GET.get('call_number', '').strip()
+        x = BookCheck()
+        cleaned = x.just_split_call_number(new)
+        joined = ' '.join(cleaned)
         newtag = request.GET.get('tag', '').strip()
         conn = sqlite3.connect('tada.db')
         c = conn.cursor()
-
-        c.execute("INSERT INTO tada (call_number,tag,status) VALUES (?,?,?)", (new, newtag, 1))
-        #new_id = c.lastrowid
-
+        c.execute("INSERT INTO tada (call_number,tag,status) VALUES (?,?,?)", (joined, newtag, 1))
         conn.commit()
         c.close()
         flash = 'The new book was inserted into the database. <a href="/new">Add another</a>'
@@ -52,6 +52,9 @@ def edit_item(no):
 
     elif request.GET.get('save', '').strip():
         edit = request.GET.get('call_number', '').strip()
+        x = BookCheck()
+        cleaned = x.just_split_call_number(edit)
+        joined = ' '.join(cleaned)
         tag = request.GET.get('tag', '').strip()
         status = request.GET.get('status', '').strip()
 
@@ -62,7 +65,7 @@ def edit_item(no):
 
         conn = sqlite3.connect('tada.db')
         c = conn.cursor()
-        c.execute("UPDATE tada SET call_number = ?, tag = ?, status = ? WHERE id LIKE ?", (edit, tag, status, no))
+        c.execute("UPDATE tada SET call_number = ?, tag = ?, status = ? WHERE id LIKE ?", (joined, tag, status, no))
         conn.commit()
 
         return '<p>The item number %s was successfully updated. <a href="/books">Home</a></p>' % no
