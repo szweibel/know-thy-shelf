@@ -11,8 +11,8 @@
 </ul>
 </p>
 <p>Key:</p>
-<p>Green: Correct</p>
-<p>Red: Misplaced</p>
+<p>Green: Neighbor is correct book</p>
+<p>Red: Wrong neighbor</p>
 </div>
 <div>---------------------</div>
 <div class="row">
@@ -26,7 +26,7 @@
 <p>Key:</p>
 <p>Green: Correct</p>
 <p>Red: Misplaced</p>
-<p>Blue: Weirdness</p>
+<p>Yellow: Weirdness</p>
 <p>Purple: Likely Correct</p>
 </div>
 <div>---------------------</div>

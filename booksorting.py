@@ -28,6 +28,10 @@ class BookCheck(object):
             if len(call_number) is 3:
                 call_number.insert(1, '0')
                 call_number.insert(3, '0')
+            if len(call_number) is 2:
+                call_number.insert(1, '0')
+                call_number.insert(2, '0')
+                call_number.append('0')
         return call_list
 
     def just_split_call_number(self, call_number):
@@ -48,6 +52,10 @@ class BookCheck(object):
         if len(call_number) is 3:
             call_number.insert(1, '0')
             call_number.insert(3, '0')
+        if len(call_number) is 2:
+            call_number.insert(1, '0')
+            call_number.append('0')
+            call_number.append('0')
         return call_number
 
     def is_number(s):
@@ -77,7 +85,7 @@ class BookCheck(object):
         return table
 
     def find_left_partner(self, book, full_list):
-        print book, full_list[0]
+        #print book, full_list[0]
         if book != full_list[0]:
             try:
                 x = full_list.index(book) - 1
@@ -143,13 +151,13 @@ class BookCheck(object):
         rehabilitated_list = []
 
         for index, book in enumerate(booklist):
-            # print 'correct: ', correct_list
-            # print 'wrong: ', misplaced_list
-            # print 'Moved back from correct: ', moved_list
-            # print 'Looking at: ', book, '>', last_book, '?'
-            # print 'rehabilitated: ', rehabilitated_list
-            # print "Gapped list: ", self.gapped_list
-            # print '__________'
+            print 'correct: ', correct_list
+            print 'wrong: ', misplaced_list
+            print 'Moved back from correct: ', moved_list
+            print 'Looking at: ', book, '>', last_book, '?'
+            print 'rehabilitated: ', rehabilitated_list
+            print "Gapped list: ", self.gapped_list
+            print '__________'
 
             if self.order(book, last_book):
                 correct_list.append(book)
@@ -236,7 +244,6 @@ class BookCheck(object):
 
     # Get the part of the library appropriate to compare to the scanned list
     def new_lib_slice(self, scanned_list, library_list):
-
         first_scanned = scanned_list[0]
         last_scanned = scanned_list[-1]
         start = self.scan_spot_find(first_scanned, library_list)
@@ -265,32 +272,21 @@ class BookCheck(object):
 id_dict = {"2": "AA240 B142 2000", "3": 'AA240 B142 1999', "9": "TR765 7 G23 I71 1896", "10": "HN657 N76 1982", "12": "CK364 H876 G52 1946",
 "13": "AC875 L65 1956", "14": "Z99 U10 T49 1949", "15": "AA240 G22 2012"}
 
-scanned_books = ['AA240 B142 2000', 'AA240 B142 1999', 'AA240.B14323 1956', 'AB10.B14.K12 1976',
-'AB101.B14.K12 1976']
+scanned_books = ['BF173 J7253', 'TJ181 B87 2005', 'PR6015 O7885 R68 2007', 'PE1408 S772 2005', 'QA93 G69 2002',
+'QK118 B66 2012', 'HM 621 N2 v13', 'HM 621 N2 v11']
 
-correct_books = ['AA240 B142 1999', 'AA240 B142 2000', 'AA240.B14323 1956', 'AB10.B14.K12 1976',
-'AB101.B14.K12 1976', 'AB240.7.B14 C22 1976', 'CK364.54 .G52 1946', 'J4375 .H876 .G52 1946',
-'JR437 .K6 .I52 1995']
+correct_books = ['BF173 J7253', 'HM 621 N2 v11', 'HM 621 N2 v13', 'PE1408 S772 2005', 'PR6015 O7885 R68 2007',
+'QA93 G69 2002', 'QK118 B66 2012', 'TJ181 B87 2005']
 
 u = BookCheck()
-
-last_list = []
-for book in scanned_books:
-            j = u.find_id_from_call(book, id_dict)
-            last_list.append(j)
-print last_list
 
 h = u.split_arrange(correct_books)
 hh = u.split_arrange(scanned_books)
 
 i = u.sort_table(correct_books, (0, 1, 2, 3))
 
-#print u.final_order(scanned_books, correct_books)
+print u.final_order(correct_books, correct_books)
 
-list_to_compare = u.new_lib_slice(hh, h)
-#print "Scanned: ", scanned_books
-# fake_list = [2, 3, 4, 5, 70, 60, 6, 10, 9, 13, 11, 12, 14, 15, 16, 50, 510, 17]
+#list_to_compare = u.new_lib_slice(hh, h)
 
-fake_list2 = [1, 2, 3, 4, 10, 5, 6, 70, 71, 72, 7, 8, 9, 11, 12, 13, 14]
-
-#print u.compare_order(fake_list2)
+#print u.compare_order(correct_books)
