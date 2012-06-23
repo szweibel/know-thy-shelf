@@ -1,6 +1,6 @@
 body
 {
-	background: #d8da3d;
+	background: #ffffff;
 	font-family: 'EB Garamond', serif;
 }
 a, h1, h2
@@ -35,7 +35,7 @@ h2
 {
 	margin: 2em auto;
 	padding: 0.8em;
-	width: 35em;
+	width: 40em;
 	background: #ffffff;
 }
 .entries

@@ -278,14 +278,14 @@ scanned_books = ['BF173 J7253', 'TJ181 B87 2005', 'PR6015 O7885 R68 2007', 'PE14
 correct_books = ['BF173 J7253', 'HM 621 N2 v11', 'HM 621 N2 v13', 'PE1408 S772 2005', 'PR6015 O7885 R68 2007',
 'QA93 G69 2002', 'QK118 B66 2012', 'TJ181 B87 2005']
 
-u = BookCheck()
+# u = BookCheck()
 
-h = u.split_arrange(correct_books)
-hh = u.split_arrange(scanned_books)
+# h = u.split_arrange(correct_books)
+# hh = u.split_arrange(scanned_books)
 
-i = u.sort_table(correct_books, (0, 1, 2, 3))
+# i = u.sort_table(correct_books, (0, 1, 2, 3))
 
-print u.final_order(correct_books, correct_books)
+# print u.final_order(correct_books, correct_books)
 
 #list_to_compare = u.new_lib_slice(hh, h)
 
