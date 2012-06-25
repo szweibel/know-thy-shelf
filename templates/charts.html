@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="row">
+<form action="/formatcharts" class="chart_format" id="chart_format" method="post">
+<div class="span2">
+<p><label for='time_period'>Show data for the last:</label>
+<input type="text" class="span1" name="start_date" maxlength="5"> days.</p>
+<input name="save" type="submit" value="Save" class="btn btn-primary" />
+</div>
+</form>
+</div>
+<div class="row">
+<img width="400" height="350" title="Questions per day" src="{{url_for('static', filename='days.png')}}" alt="Questions per day">
+<img width="400" height="350" title="Number of questions by date" src="{{url_for('static', filename='events.png')}}" alt="Number of questions by date">
+</div>
+<div class="row">
+<img width="400" height="350" title="Questions by Group" src="{{url_for('static', filename='grouppie.png')}}" alt="Questions by Group">
+<img width="400" height="350" title="Questions by Format" src="{{url_for('static', filename='formatpie.png')}}" alt="Questions by Format">
+</div>
+<div class="row">
+<img width="400" height="350" title="Questions by Department" src="{{url_for('static', filename='departmentpie.png')}}" alt="Questions by Department">
+<img width="400" height="350" title="Questions by Location" src="{{url_for('static', filename='locationpie.png')}}" alt="Questions by Location">
+</div>
+<div class="row">
+<img width="400" height="350" title="Questions by Type" src="{{url_for('static', filename='typepie.png')}}" alt="Questions by ">
+<img width="400" height="350" title="Questions by Duration" src="{{url_for('static', filename='durationpie.png')}}" alt="Questions by Duration">
+</div>
+{% endblock %}

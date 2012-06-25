@@ -1,0 +1,28 @@
+<!doctype html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Library Inventory">
+<meta name="author" content="SZ">
+<title>Know Thy Shelf</title>
+<link href='http://fonts.googleapis.com/css?family=EB+Garamond|Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='bootstrap.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='bookshelf.css')}}">
+<script src="http://static.scripting.com/github/bootstrap2/js/jquery.js"></script>
+<script src="http://static.scripting.com/github/bootstrap2/js/bootstrap-modal.js"></script>
+</head>
+
+<div class="header">
+	<h1><a href="{{ url_for('show_entries') }}" title="Home">Know Thy Shelf</a></h1>
+</div>
+<div class="container">
+<div class="page">
+	{% for message in get_flashed_messages() %}
+		<div class="flash">{{message}}</div>
+	{% endfor %}
+	{% block body %}{% endblock %}
+</div>
+</div>
+</body>
+</html>
+

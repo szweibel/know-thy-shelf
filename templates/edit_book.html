@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block body %}
+<p>Edit the book with ID = {{no}}</p>
+{% for item in book %}
+<form action="/change" method="post">
+<input type="hidden" name="no" value="{{no}}">
+<input type="text" name="call_number" value="{{ item.call_number }}" size="100" maxlength="100">
+<input type="text" name="tag" value="{{ item.tag }}" size="100" maxlength="100">
+
+{% if item.status == 1 %}
+    <select name="status">
+    <option selected>found</option>
+    <option>lost</option>
+    </select>
+{%endif%}
+{%if item.status == 0 %}
+    <select name="status">
+    <option>found</option>
+    <option selected>lost</option>
+    </select>
+{%endif%}
+<br/>
+{% endfor %}
+<input type="submit" name="save" value="save">
+</form>
+
+<form action="/delete" method="post">
+<input type="hidden" name="no" value="{{no}}">
+<input type="submit" name="delete" value="delete">
+</form>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block body %}
+<p>
+<div class="row">
+<ul class="bookshelf">
+{% for book in positioned %}
+    <dt class="{{ book.status }}">{{ book.call_number }}</dt>
+{%endfor%}
+</ul>
+<p>Key:</p>
+<p>Green: Correct</p>
+<p>Red: Misplaced</p>
+<p>Yellow: Likely Correct (debug)</p>
+<!-- <p>Purple: Likely Correct</p> -->
+</div>
+<div>---------------------</div>
+<div class="row">
+<ul class="bookshelf">
+{% for book in books %}
+    <dt class="left{{ book.statusleft }}">{{book.call_number}}</dt>
+    <dt class="right{{ book.statusright }}"></dt>
+{%endfor%}
+</ul>
+</p>
+<p>Key:</p>
+<p>Green: Neighbor is correct book</p>
+<p>Red: Wrong neighbor</p>
+</div>
+<div>---------------------</div>
+<div class="row">
+<p>MISSING:</p>
+<ul>
+{% for call_number in missing %}
+   {# {% ba = ' '.join(call_number) %}
+    {% clean = ba.replace(' 0',' ') %} #}
+    <dt class="missing">{{clean}}</dt>
+{%endfor%}
+</ul>
+</div>
+{% endblock %}
