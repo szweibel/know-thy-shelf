@@ -1,31 +1,31 @@
 {% extends "layout.html" %}
 {% block body %}
-<p>Edit the book with ID = {{no}}</p>
-{% for item in book %}
+<p>Edit book {{book.call_number}}</p>
 <form action="/change" method="post">
-<input type="hidden" name="no" value="{{no}}">
-<input type="text" name="call_number" value="{{ item.call_number }}" size="100" maxlength="100">
-<input type="text" name="tag" value="{{ item.tag }}" size="100" maxlength="100">
+<input type="hidden" name="no" value="{{book.id}}">
+<label class="control-label" for="call_number">Call Number:</label>
+<input type="text" name="call_number" value="{{ book.call_number }}" size="100" id='call_number'>
+<label class="control-label" for="tag">RFID Tag:</label>
+<input type="text" name="tag" value="{{ book.RFID_tag }}" size="100" id='tag'>
 
-{% if item.status == 1 %}
+{% if book.located == True %}
     <select name="status">
     <option selected>found</option>
     <option>lost</option>
     </select>
 {%endif%}
-{%if item.status == 0 %}
+{%if book.located == False %}
     <select name="status">
     <option>found</option>
     <option selected>lost</option>
     </select>
 {%endif%}
 <br/>
-{% endfor %}
 <input type="submit" name="save" value="save">
 </form>
 
 <form action="/delete" method="post">
-<input type="hidden" name="no" value="{{no}}">
+<input type="hidden" name="no" value="{{book.id}}">
 <input type="submit" name="delete" value="delete">
 </form>
 {% endblock %}

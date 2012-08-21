@@ -85,7 +85,7 @@ class BookCheck(object):
         return table
 
     def find_left_partner(self, book, full_list):
-        #print book, full_list[0]
+        # print book, full_list[0]
         if book != full_list[0]:
             try:
                 x = full_list.index(book) - 1
@@ -141,7 +141,7 @@ class BookCheck(object):
         return out
 
     # Main function to determine 'relative' order
-    def compare_order(self, booklist):
+    def compare_order(self, booklist, first_book_error=None):
         correct_list = []
         misplaced_list = []
         last_book = 0
@@ -158,7 +158,8 @@ class BookCheck(object):
             print 'rehabilitated: ', rehabilitated_list
             print "Gapped list: ", self.gapped_list
             print '__________'
-
+            if book == first_book_error:
+                misplaced_list.append(first_book_error)
             if self.order(book, last_book):
                 correct_list.append(book)
                 #if the last book is below this one, make the last book correct
@@ -188,7 +189,10 @@ class BookCheck(object):
                     last_book = correct_list[-1]  # SHOULD BE 'Last TRUE Book'
                 #print last_book, book
             else:
-                print "Error!"
+                print "Error!" + str(book)
+                print booklist[0]
+                first_book_error = booklist[0]
+                # self.compare_order(booklist, first_book_error=first_book_error)
         #print "misplaced list: ", misplaced_list
         #print "correct: ", correct_list
 
@@ -216,7 +220,7 @@ class BookCheck(object):
     def dynamic_final_order(self, book, wrong_list, correct_list, rehabilitated_list):
 
         if book in correct_list:
-            return [' '.join(book), 'correct']
+            return ' '.join(book), 'correct'
         elif book in rehabilitated_list:
             return ' '.join(book), 'rehabilitated'
         elif book in self.gapped_list:
@@ -257,12 +261,6 @@ class BookCheck(object):
         for key, book in enumerate(library_list):
             if scanned == book:
                 return key
-
-    # Switch the tag with the call number
-    def find_call_from_tag(self, tag, call_number_dict):
-        for index, book in call_number_dict.items():
-            if tag == index:
-                return book
 
     def find_id_from_call(self, call_number, id_dict):
         for index, book in id_dict.items():

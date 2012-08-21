@@ -31,9 +31,7 @@
 <p>MISSING:</p>
 <ul>
 {% for call_number in missing %}
-   {# {% ba = ' '.join(call_number) %}
-    {% clean = ba.replace(' 0',' ') %} #}
-    <dt class="missing">{{clean}}</dt>
+    <dt class="missing">{{call_number}}</dt>
 {%endfor%}
 </ul>
 </div>

@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 {% block body %}
-<p>Add a new book to the list:</p>
+<p>Add a new book to the list</p>
 <form action="/new" method="post">
-<p>Call Number:<input type="text" size="100" maxlength="100" name="call_number"></br>
-RFID tag:<input type="text" size="100" maxlength="100" name="tag"></p>
+<label class="control-label" for="call_number">Call Number:</label><input type="text" id='call_number' size="100" name="call_number"></br>
+<label class="control-label" for="tag">RFID tag:</label><input type="text" size="100" id='tag' name="tag">
 <input type="submit" name="save" value="save">
 </form>
-<p><a href="/books">Back</a></p>
+<p><a href="/">Back</a></p>
 {%endblock%}

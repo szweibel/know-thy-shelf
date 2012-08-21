@@ -1,56 +1,58 @@
 import os
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
-import sqlite3
+from flask import Flask, request, redirect, url_for, render_template, flash, make_response, jsonify, send_file
+from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.security import (Security, LoginForm, login_required, roles_accepted, user_datastore)
+from flask.ext.security.datastore.sqlalchemy import SQLAlchemyUserDatastore
 from booksorting import *
 
 # create application
 app = Flask(__name__)
 app.config.from_pyfile('settings.cfg')
 
+# connect to database
+db = SQLAlchemy(app)
+Security(app, SQLAlchemyUserDatastore(db))
 
-def connect_db():
-    return sqlite3.connect(app.config['DATABASE'])
+
+"""
+MODELS
+"""
 
 
-# def init_db():
-#     with closing(connect_db()) as db:
-#         with app.open_resource('schema.sql') as f:
-#             db.cursor().executescript(f.read())
-#         db.commit()
+class Book(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80))
+    call_number = db.Column(db.String(80))
+    RFID_tag = db.Column(db.String(80))
+    located = db.Column(db.Boolean, default=True)
+
+    def __repr__(self):
+        return '<Book %r>' % self.call_number
+
+"""
+LOGIC
+"""
 
 
 @app.before_request
 def before_request():
-    g.db = connect_db()
+    pass
 
 
-@app.teardown_request
-def teardown_request(exception):
-    g.db.close()
+@app.after_request
+def shutdown_session(response):
+    db.session.remove()
+    return response
 
 
 @app.route('/')
 def show_entries():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-
-    cur = g.db.execute("SELECT id, tag, call_number FROM tada WHERE status = 1")
-    lost = g.db.execute("SELECT id, tag, call_number FROM tada WHERE status = 0")
-    books = [dict(id=row[0], tag=row[1], call_number=row[2]) for row in cur.fetchall()]
-    lost_books = [dict(id=row[0], tag=row[1], call_number=row[2]) for row in lost.fetchall()]
+    books = Book.query.filter_by(located=True).all()
+    lost_books = Book.query.filter_by(located=False).all()
     return render_template('show_entries.html', books=books, lost=lost_books)
-
-
-# @app.route('/view/')
-# @app.route('/view/<int:id>')
-# def show_entry(id=0):
-#     cur = g.db.execute('select title, content, date from entries where id = ?', (id,))
-#     _entry = cur.fetchone()
-#     if not _entry:
-#         flash('Entry could not be found')
-#         return redirect(url_for('show_entries'))
-#     entry = dict(title=_entry[0], content=_entry[1], date=_entry[2])
-#     return render_template('show_entry.html', entry=entry)
 
 
 @app.route('/new', methods=['POST'])
@@ -58,13 +60,18 @@ def new_item():
     if not session.get('logged_in'):
         abort(401)
     new = request.form['call_number']
+    new = new.upper()
+    new = new.replace(" .", " ")
+    new = new.replace(".", " ")
+    new = new.strip()
     x = BookCheck()
     cleaned = x.just_split_call_number(new)
     joined = ' '.join(cleaned)
     newtag = request.form['tag']
-    g.db.execute("INSERT INTO tada (call_number,tag,status) VALUES (?,?,?)", (joined, newtag, 1))
-    g.db.commit()
-    flash('The new book was inserted into the database.')
+    book = Book(call_number=new, RFID_tag=newtag, located=True)
+    db.session.add(book)
+    db.session.commit()
+    flash(new + ' was inserted into the database.')
     return redirect(url_for('add_item'))
 
 
@@ -77,10 +84,8 @@ def add_item():
 
 @app.route('/edit/<int:book_id>')
 def edit_item(book_id):
-    no = book_id
-    bookget = g.db.execute("SELECT call_number, tag, status FROM tada WHERE id = ?", [(str(no))])
-    book = [dict(call_number=row[0], tag=row[1], status=row[2]) for row in bookget.fetchall()]
-    return render_template('edit_book.html', book=book, no=no)
+    book = Book.query.filter_by(id=book_id).first()
+    return render_template('edit_book.html', book=book)
 
 
 @app.route('/change', methods=['POST'])
@@ -96,12 +101,14 @@ def change_item():
     cleaned = x.just_split_call_number(edit)
     joined = ' '.join(cleaned)
     if status == 'found':
-        status = 1
+        status = True
     else:
-        status = 0
-
-    g.db.execute("UPDATE tada SET call_number = ?, tag = ?, status = ? WHERE id LIKE ?", (joined, tag, status, no))
-    g.db.commit()
+        status = False
+    book = Book.query.filter_by(id=no).first()
+    book.call_number = edit
+    book.RFID_tag = tag
+    book.located = status
+    db.session.commit()
     flash('%s was successfully updated.' % joined)
     return redirect(url_for('show_entries'))
 
@@ -111,9 +118,10 @@ def delete_item():
     if not session.get('logged_in'):
         abort(401)
     no = request.form['no']
-    g.db.execute("DELETE FROM tada WHERE id LIKE ?", [(str(no))])
-    g.db.commit()
-    flash('The item number %s was successfully deleted.' % no)
+    book = Book.query.filter_by(id=no).first()
+    flash('Book %s was successfully deleted.' % book.call_number)
+    db.session.delete(book)
+    db.session.commit()
     return redirect(url_for('show_entries'))
 
 
@@ -124,7 +132,6 @@ def start_scan():
 
 @app.route('/scan', methods=['POST'])
 def scan_books():
-    next_list = []
     ordered_library_calls = []
     if not session.get('logged_in'):
         abort(401)
@@ -134,32 +141,22 @@ def scan_books():
     sanitized_list = list_of_tags.split('\r\n')
 
     # to find books for order
-    gotten = g.db.execute("SELECT tag, call_number FROM tada")
-    result = dict(gotten)
-
-    # to find books for missing
-    library_calls = g.db.execute("SELECT call_number FROM tada")
-    # library_calls = [dict(call_number=row[0]) for row in library_calls.fetchall()]
-    library_calls = [row for row in library_calls.fetchall()]
+    result = Book.query.all()
+    library_calls = Book.query.all()
     all_books = library_calls[:]
 
     # to find the IDs of books
-    calls = g.db.execute("SELECT id, call_number FROM tada")
-    calls_with_ids = dict(calls)
-    #return calls_with_ids
+    calls_with_ids = {book.id : book.call_number for book in library_calls}
 
-    #Find order of books
-    for book in library_calls:
-        next_list.append(str(book))
+    next_list = [book.call_number for book in library_calls]
     bs = BookCheck()
     split_library_calls = bs.split_arrange(next_list)
     ordered_library_calls = bs.sort_table(split_library_calls, (0, 1, 2, 3))
+
     x = BookCheck()
-    out = [x.find_call_from_tag(tag, result) for tag in sanitized_list]
-    new_list = []
-    for book in out:
-        new_list.append(str(book))
-    sorted_scanned_books = x.split_arrange(new_list)
+    scanned_books = [Book.query.filter_by(RFID_tag=tag).first() for tag in sanitized_list]
+
+    sorted_scanned_books = x.split_arrange([book.call_number for book in scanned_books if book != None])
     to_test = sorted_scanned_books[:]
     copy = sorted_scanned_books[:]
     ordered = x.final_order(to_test, ordered_library_calls)
@@ -169,35 +166,36 @@ def scan_books():
     list_to_compare = bs.new_lib_slice(copy, ordered_library_calls)
     missing_books = bs.find_missing(list_to_compare, to_test)
     boo = []
-    bla = []
+    lost_books = []
     for book in missing_books:
         for part in book:
             boo.append(part)
             boo.append(' ')
-        bla.append(book)
+        lost_books.append(book)
 
     # Determine found books vs. lost books
-    lost_books = bla[:]
-    found_books = [x for x in sorted_scanned_books if x not in lost_books]
     cleaned_lost = bs.clean_up_call_numbers(lost_books)
+    found_books = [x for x in sorted_scanned_books if x not in lost_books]
     cleaned_found = bs.clean_up_call_numbers(found_books)
-    last_lost_list = []
-    for book in cleaned_lost:
-        j = bs.find_id_from_call(book, calls_with_ids)
-        last_lost_list.append(str(j))
+    last_found_list = [bs.find_id_from_call(book, calls_with_ids) for book in cleaned_found]
+    last_lost_list = [bs.find_id_from_call(book, calls_with_ids) for book in cleaned_lost]
 
     #TRYING TO CHANGE TABLE TO UPDATE 'MISSING' OR 'FOUND' BOOKS
     for book in last_lost_list:
-        g.db.execute("UPDATE tada SET status = 0 WHERE id LIKE ?", (book,))
-    g.db.commit()
+        book = Book.query.filter_by(id=book).first()
+        book.located = False
 
-    for bookf in cleaned_found:
-        g.db.execute("UPDATE tada SET status = 1 WHERE call_number = ?", (bookf,))
-    g.db.commit()
+    for book in last_found_list:
+        book = Book.query.filter_by(id=book).first()
+        try:
+            book.located = True
+        except Exception:
+            print str(book)
+    db.session.commit()
 
     super_cleaned = [dict(call_number=row[0].replace(' 0', ' '), status=row[1]) for row in seconded]
     duper_cleaned = [dict(call_number=(' '.join(row[0])).replace(' 0', ' '), statusleft=row[1], statusright=row[2]) for row in ordered]
-    return render_template('after_scan.html', books=duper_cleaned, positioned=super_cleaned, missing=bla)
+    return render_template('after_scan.html', books=duper_cleaned, positioned=super_cleaned, missing=cleaned_lost)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -228,5 +226,6 @@ def logout():
 #Deployment
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=port)
+    # app.run()

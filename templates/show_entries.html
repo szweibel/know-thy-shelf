@@ -1,28 +1,31 @@
 {% extends "layout.html" %}
 {% block body %}
-
-<div class="span3">
-<p>Found:</p>
-<table border="1">
+<div class='row'>
+<div class="span2">
+<p class='post'>Found:</p>
 {% for book in books %}
-  <tr>
-    <td><a href="/edit/{{ book.id }}">{{ book.call_number }}</a></td>
-  </tr>
+  <ul>
+    <li><a href="/edit/{{ book.id }}">{{ book.call_number }}</a></li>
+  </ul>
+{% else %}
+None
 {%endfor%}
-</table>
 </div>
-<div class="span3">
-<p>Lost:</p>
+<div class="span2">
+<p class='post'>Lost:</p>
 <table border="1">
 {%for book in lost%}
-  <tr>
-    <td><a href="/edit/{{ book.id }}">{{ book.call_number }}</a></td>
-  </tr>
+  <ul>
+    <li><a href="/edit/{{ book.id }}">{{ book.call_number }}</a></li>
+  </ul>
+{% else %}
+None
 {%endfor%}
 </table>
 </div>
 <div class="span2">
 <p><a href="/add">Add new book</a></p>
 <p><a href="/startscan">Scan bookshelves</a></p>
+</div>
 </div>
 {% endblock %}
