@@ -1,37 +1,37 @@
 {% extends "layout.html" %}
 {% block body %}
-<p>
 <div class="row">
+<h2>Relative Position</h2>
 <ul class="bookshelf">
 {% for book in positioned %}
-    <dt class="{{ book.status }}">{{ book.call_number }}</dt>
+    <dt class="book {{ book.status }}">{{ book.call_number }}</dt>
 {%endfor%}
 </ul>
 <p>Key:</p>
 <p>Green: Correct</p>
-<p>Red: Misplaced</p>
-<p>Yellow: Likely Correct (debug)</p>
+<p>Red: Move to the right</p>
+<p>Blue: Move to the left</p>
 <!-- <p>Purple: Likely Correct</p> -->
 </div>
 <div>---------------------</div>
 <div class="row">
+<h2>Objective Position</h2>
 <ul class="bookshelf">
 {% for book in books %}
-    <dt class="left{{ book.statusleft }}">{{book.call_number}}</dt>
-    <dt class="right{{ book.statusright }}"></dt>
+    <dt class="bookLeftHalf left{{ book.statusleft }}">{{book.call_number}}</dt>
+    <dt class="bookRightHalf right{{ book.statusright }}"></dt>
 {%endfor%}
 </ul>
-</p>
 <p>Key:</p>
-<p>Green: Neighbor is correct book</p>
+<p>Green: Correct Neighbor</p>
 <p>Red: Wrong neighbor</p>
 </div>
 <div>---------------------</div>
 <div class="row">
-<p>MISSING:</p>
-<ul>
+<h2>MISSING:</h2>
+<ul class='bookshelf'>
 {% for call_number in missing %}
-    <dt class="missing">{{call_number}}</dt>
+    <dt class="missing book">{{call_number.call_number}}</dt>
 {%endfor%}
 </ul>
 </div>

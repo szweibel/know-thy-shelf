@@ -1,10 +1,65 @@
 {% extends "layout.html" %}
 {% block body %}
-<p>Add a new book to the list</p>
-<form action="/new" method="post">
-<label class="control-label" for="call_number">Call Number:</label><input type="text" id='call_number' size="100" name="call_number"></br>
-<label class="control-label" for="tag">RFID tag:</label><input type="text" size="100" id='tag' name="tag">
-<input type="submit" name="save" value="save">
+<script type="text/javascript">
+var APILocation = 'http://mighty-wildwood-7308.herokuapp.com';
+jQuery(document).ready(function(){
+    $('#search').click(function(event) {
+        var target = document.getElementById('spin');
+        var spinner = new Spinner().spin(target);
+        event.preventDefault();
+        var barcode = $('#barcode').val();
+        $.getJSON(APILocation + "/search", {'barcode':barcode},function(data) {})
+            .success(function(data) {
+                var docNumber = data.allBooks[0].docNumber;
+                $.getJSON(APILocation + "/marc", {'docNumber':docNumber},function(more_data) {})
+                    .success(function(more_data) {
+                        var callNumber = more_data['LC Call No.'];
+                        callNumber = $.trim(callNumber);
+                        var title = more_data['Title'];
+                        title = $.trim(title);
+                        $('#call_number').val(callNumber);
+                        $('#title').val(title);
+                        $('#doc_number').val(docNumber);
+                        $('#title_and_call').fadeIn();
+                    })
+                    .error(function(more_data) { alert('error')});
+            })
+            .error(function(data) { alert('error') });
+        $('#title_and_call').delay(2000).fadeIn();
+    });
+});
+</script>
+
+<section id="book_forms">
+<h2>Add a new book to {{ the_library.name }}</h2>
+<form action="/new" method="post" class='form-inline' id='new_book'>
+    <label class="control-label" for="barcode">Barcode:</label><input type="text" size="100" id='barcode' name="barcode">
+    <label class="control-label" for="tag">RFID tag:</label><input type="text" size="100" id='tag' name="tag">
+    <input id='search' type="submit" name="search" value="Search"><br/><br/>
+    <div class='fadey' id='title_and_call' style='display: none;'>
+    <label class="control-label" for="call_number">Call Number:</label><input type="text" id="call_number" size="100" name="call_number">
+    <label class="control-label" for="call_number">Title:</label><input type="text" id="title" size="100" name="title">
+    <input type='hidden' value='' name='doc_number' id='doc_number'>
+    <input id="save" type="submit" name="save" value="Save">
+    </div>
 </form>
+</section>
+<div id='spin'></div>
+<div>
+<form action="/newcollection" method="post" class='form-inline' id='new_collection'>
+    <h2>Create a new library collection</h2>
+    <!-- <label class="control-label" for="collection">Collection:</label> --><input type="text" size="100" id='collection' name="collection">
+    <input id="save" type="submit" name="save" value="Save">
+</form>
+<form action="/deletecollection" method="post" class='form-inline' id='new_collection'>
+    <h2>Delete a library collection</h2>
+    <select id="library_deleter" class='select-long' name='library_id_del'>
+    {% for library in libraries %}
+    <option value="{{ library.id }}">{{ library.name }}</option>
+    {% endfor %}
+<input type="submit" name="delete" value="delete">
+    </select>
+</form>
+</div>
 <p><a href="/">Back</a></p>
 {%endblock%}

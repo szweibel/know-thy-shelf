@@ -1,4 +1,5 @@
 from shelf import *
+import callnumber
 
 ctx = app.test_request_context('/?next=http://example.com/')
 ctx.push()
@@ -6,14 +7,20 @@ ctx.push()
 db.drop_all()
 db.create_all()
 
-book = Book(RFID_tag='1', call_number='AB240 B142 1999')
-book2 = Book(RFID_tag='2', call_number='AA240 B143 2000')
-book3 = Book(RFID_tag='3', call_number='AA240 B14323 J40 1956')
-book4 = Book(RFID_tag='4', call_number='CK364 H876 G52 1946')
+book_list = ['BF173 J7253', 'HM 621 N2 v11', 'HM 621 N2 v13', 'PE1408 S772 2005', 'PR6015 O7885 R68 2007',
+'QA93 G69 2002', 'QK118 B66 2012', 'TJ181 B87 2005']
+i = 0
 
-db.session.add(book)
-db.session.add(book2)
-db.session.add(book3)
-db.session.add(book4)
+new_collection = Lib_collection(name='test')
+db.session.add(new_collection)
+another_new_collection = Lib_collection(name='rando')
+db.session.add(another_new_collection)
+db.session.commit()
 
+for book in book_list:
+    i += 1
+    lccn = callnumber.LC(book)
+    denormalized_lccn = lccn.denormalized
+    book = Book(RFID_tag=i, call_number=denormalized_lccn, normalized_call_number=lccn.normalized)
+    new_collection.books.append(book)
 db.session.commit()

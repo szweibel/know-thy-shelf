@@ -1,18 +1,13 @@
+article, aside, footer, header, section {
+  display: block;
+}
 body
 {
-	background: #FFFFCC;
-	font-family: 'Droid Serif', serif;
+	background: #F7F7F9;
+	/*font-family: 'Droid Serif', serif;*/
 }
-a, h1, h2
-{
-	color: #000000;
-	text-decoration: none;
-}
-h1, h2
-{
-  font-family: 'Lobster', cursive;
-	margin: 0px;
-  font-weight: lighter;
+.row{
+  margin-left: 0px;
 }
 h2
 {
@@ -23,9 +18,15 @@ textarea {
     margin-top:  -5px;
     line-height: 35px;
     height: 200px;
+    width: 400px;
 }
 
 .navbar .brand{
+  color: #000000;
+  text-decoration: none;
+  font-family: 'Lobster', cursive;
+  margin: 0px;
+  font-weight: lighter;
 	color: #FFFF81;
   font-size: 35px;
   margin-top: -10px;
@@ -41,19 +42,9 @@ textarea {
 
 .navbar .nav > li > a {
   float: none;
-  /*padding: 9px 10px 11px;*/
-  line-height: 19px;
   color: #FFFF81;
   text-decoration: none;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-}
-
-.page
-{
-	margin: 2em auto;
-	padding: 0.8em;
-  width: 60em;
-	/*background: #ffffff;*/
 }
 
 .flash
@@ -70,7 +61,7 @@ textarea {
     padding-right: 20px;
     padding-left: 20px;
     background-color: #c68c53;
-  
+
   -webkit-border-radius: 4px;
      -moz-border-radius: 4px;
           border-radius: 4px;
@@ -86,15 +77,8 @@ textarea {
 	padding: 0.5em;
 }
 
-
 .header {
-  margin: 0;
-  padding: 0.3em;
   background: #336699;
-  border-bottom: 1px solid #000000;
-  padding-right: 20px;
-  padding-left: 20px;
-  
   -webkit-border-radius: 4px;
      -moz-border-radius: 4px;
           border-radius: 4px;
@@ -103,3 +87,7 @@ textarea {
      -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
+
+/*.fadey {
+  display: none;
+*/}

@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
-<p>Scan books to check if they're out of place, or lost:</p>
+<h2>Scan books</h2>
 <form action="/scan" method="post">
 <textarea type="text" name="tags"></textarea>
-<input type="submit" name="save" value="save">
+<input type="submit" name="save" class='btn btn-success' value="Check Order">
 </form>
 <p><a href="/">Back</a></p>
 {% endblock %}
