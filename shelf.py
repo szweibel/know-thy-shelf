@@ -37,6 +37,7 @@ class Book(db.Model):
     def __repr__(self):
         return '<Book %r>' % self.call_number
 
+
 class Lib_collection(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
@@ -49,11 +50,13 @@ class Lib_collection(db.Model):
 LOGIC
 """
 
+
 def lookup_doc(doc_number):
-    payload = {'docNumber' : doc_number}
+    payload = {'docNumber': doc_number}
     r = requests.get('http://mighty-wildwood-7308.herokuapp.com/details', params=payload)
     JSON_record = r.json()
     return JSON_record
+
 
 @app.before_request
 def before_request():
@@ -65,15 +68,17 @@ def shutdown_session(response):
     db.session.remove()
     return response
 
+
 @app.route('/')
 def show_entries():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     current_library_id = request.values.get('library_id') or 1
-    current_library =  Lib_collection.query.filter_by(id=current_library_id).first() or Lib_collection.query.first()
+    current_library = Lib_collection.query.filter_by(id=current_library_id).first() or Lib_collection.query.first()
     books = Book.query.filter_by(located=True).filter_by(lib_collection=current_library).all()
     lost_books = Book.query.filter_by(located=False).filter_by(lib_collection=current_library).all()
     return render_template('show_entries.html', books=books, lost=lost_books)
+
 
 @app.route('/new', methods=['POST'])
 def new_item():
@@ -98,6 +103,7 @@ def new_item():
     flash(stored_book + ' was inserted into the database.')
     return redirect(url_for('add_item'))
 
+
 @app.route('/newcollection', methods=['POST'])
 def new_collection():
     if not session.get('logged_in'):
@@ -109,6 +115,7 @@ def new_collection():
     flash(new_collection + ' was created as a new collection.')
     the_library_id = request.cookies.get('library_id')
     return redirect(url_for('show_entries', library_id=the_library_id))
+
 
 @app.route('/add')
 def add_item():
@@ -160,6 +167,7 @@ def delete_item():
     the_library_id = request.cookies.get('library_id')
     return redirect(url_for('show_entries', library_id=the_library_id))
 
+
 @app.route('/deletecollection', methods=['POST'])
 def delete_collection():
     if not session.get('logged_in'):
@@ -208,7 +216,7 @@ def scan_books():
 
     #Find missing books
     list_to_compare = x.lib_slice(sorted_scanned_books, ordered_library_calls)
-    missing_books= [book for book in list_to_compare if book not in sorted_scanned_books]
+    missing_books = [book for book in list_to_compare if book not in sorted_scanned_books]
     # Determine found books vs. lost books
     found_books = [book for book in sorted_scanned_books if book not in missing_books]
     last_found_list = [book for book in library_calls if book.normalized_call_number in found_books]
@@ -240,6 +248,7 @@ def scan_books():
     cleaned_absolute = [dict(call_number=row[0], statusleft=row[1], statusright=row[2], doc_number=row[3]) for row in ordered]
     return render_template('after_scan.html', books=cleaned_absolute, positioned=cleaned_positioned, missing=last_lost_list)
 
+
 @app.context_processor
 def get_library():
     default = Lib_collection.query.first()
@@ -249,6 +258,7 @@ def get_library():
         our_library = default
     libraries = Lib_collection.query.all()
     return dict(the_library=our_library, libraries=libraries)
+
 
 # Change the Cookie that sets which library is being used
 @app.route('/change_library', methods=['POST'])
@@ -260,6 +270,7 @@ def change_library_cookie():
     output.set_cookie('library_name', which_library.name)
     output.set_cookie('library_id', which_library.id)
     return output
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
