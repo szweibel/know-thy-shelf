@@ -5,17 +5,11 @@ var APILocation = 'http://mighty-wildwood-7308.herokuapp.com';
 jQuery(document).ready(function(){
     $('#libDelete').click(function(event){
         event.preventDefault();
-        var x;
-        var r=confirm("Press a button!");
+        var r=confirm("Delete this collection?");
         if (r==true)
           {
-          x="You pressed OK!";
+          $('#delete_collection').submit();
           }
-        else
-          {
-          x="You pressed Cancel!";
-          }
-        document.getElementById("demo").innerHTML=x;
     });
     $('#search').click(function(event) {
         var target = document.getElementById('spin');
@@ -65,7 +59,7 @@ jQuery(document).ready(function(){
     <input type="text" size="100" id='collection' name="collection">
     <input id="save" type="submit" name="save" value="Save">
 </form>
-<form action="/deletecollection" method="post" class='form-inline' id='new_collection'>
+<form action="/deletecollection" method="post" class='form-inline' id='delete_collection'>
     <h2>Delete a library collection</h2>
     <select id="library_deleter" class='select-long' name='library_id_del'>
     {% for library in libraries %}
