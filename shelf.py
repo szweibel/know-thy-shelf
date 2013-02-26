@@ -3,8 +3,7 @@ import callnumber
 from collections import OrderedDict
 from flask import Flask, request, session, redirect, url_for, abort, render_template, flash, make_response
 from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.security import (Security)
-from flask.ext.security.datastore.sqlalchemy import SQLAlchemyUserDatastore
+# from flask.ext.security import Security, SQLAlchemyUserDatastore, UserMixin, RoleMixin, login_required
 from booksorting import BookCheck
 import requests
 
@@ -15,8 +14,6 @@ app.config.from_pyfile('settings.cfg')
 
 # connect to database
 db = SQLAlchemy(app)
-Security(app, SQLAlchemyUserDatastore(db))
-
 
 """
 MODELS

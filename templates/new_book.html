@@ -3,6 +3,20 @@
 <script type="text/javascript">
 var APILocation = 'http://mighty-wildwood-7308.herokuapp.com';
 jQuery(document).ready(function(){
+    $('#libDelete').click(function(event){
+        event.preventDefault();
+        var x;
+        var r=confirm("Press a button!");
+        if (r==true)
+          {
+          x="You pressed OK!";
+          }
+        else
+          {
+          x="You pressed Cancel!";
+          }
+        document.getElementById("demo").innerHTML=x;
+    });
     $('#search').click(function(event) {
         var target = document.getElementById('spin');
         var spinner = new Spinner().spin(target);
@@ -48,7 +62,7 @@ jQuery(document).ready(function(){
 <div>
 <form action="/newcollection" method="post" class='form-inline' id='new_collection'>
     <h2>Create a new library collection</h2>
-    <!-- <label class="control-label" for="collection">Collection:</label> --><input type="text" size="100" id='collection' name="collection">
+    <input type="text" size="100" id='collection' name="collection">
     <input id="save" type="submit" name="save" value="Save">
 </form>
 <form action="/deletecollection" method="post" class='form-inline' id='new_collection'>
@@ -57,7 +71,7 @@ jQuery(document).ready(function(){
     {% for library in libraries %}
     <option value="{{ library.id }}">{{ library.name }}</option>
     {% endfor %}
-<input type="submit" name="delete" value="delete">
+<input type="submit" name="delete" value="delete" id='libDelete'>
     </select>
 </form>
 </div>
