@@ -11,6 +11,14 @@ jQuery(document).ready(function(){
           $('#delete_collection').submit();
           }
     });
+
+    $('#barcode').on('keyup', function(event) {
+        if (event.which == 13) {
+            event.preventDefault();
+            $('#search').click()
+        }
+    });
+
     $('#search').click(function(event) {
         var target = document.getElementById('spin');
         var spinner = new Spinner().spin(target);

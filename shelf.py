@@ -70,9 +70,9 @@ def shutdown_session(response):
 def show_entries():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    current_library_id = request.values.get('library_id') or 1
+    current_library_id = request.values.get('library_id') or Lib_collection.query.first().id
     current_library = Lib_collection.query.filter_by(id=current_library_id).first() or Lib_collection.query.first()
-    books = Book.query.filter_by(located=True).filter_by(lib_collection=current_library).all()
+    books = Book.query.filter_by(located=True).filter_by(lib_collection=current_library).order_by(Book.call_number.desc()).all()
     lost_books = Book.query.filter_by(located=False).filter_by(lib_collection=current_library).all()
     return render_template('show_entries.html', books=books, lost=lost_books)
 
