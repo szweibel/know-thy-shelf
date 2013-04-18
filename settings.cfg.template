@@ -1,0 +1,6 @@
+# configuration
+DEBUG = True
+SECRET_KEY = 'CHANGE_THIS'
+USERNAME = 'admin'
+PASSWORD = 'test'
+SQLALCHEMY_DATABASE_URI = 'mysql://<USER>:<PASSWORD>@localhost/bookshelfdb'
