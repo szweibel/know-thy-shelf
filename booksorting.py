@@ -147,7 +147,7 @@ class BookCheck(object):
                     print 'is ', book, '>', self.gapped_list[-1], 'and is', book, '<', correct_list[0]
                     if self.order(book, self.gapped_list[-1]) and self.order(correct_list[0], book) :
                         hh = self.gapped_list[-1]
-                        print "yay!",  hh, "saved!"
+                        print hh, "saved!"
                         rehabilitated_list.append(hh)
                         self.gapped_list.remove(hh)
                     if self.order(book, last_last_book, last_book):
